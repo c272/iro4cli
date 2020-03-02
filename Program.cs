@@ -10,6 +10,7 @@ namespace iro4cli
     {
         static void Main(string[] args)
         {
+            Emulator.Run("#testline!testline!\nname [] = .gaming\ngamer = $${__CONSTANT}");
         }
     }
 }
