@@ -24,11 +24,13 @@ namespace iro4cli
     public class IroRegex : IroVariable
     {
         public Regex Value;
+        public string StringValue;
 
         public IroRegex(string rawVal)
         {
             //Put the regex in.
             Value = new Regex(rawVal);
+            StringValue = rawVal;
             base.Type = VariableType.Regex;
         }
     }
