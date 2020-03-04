@@ -20,6 +20,7 @@
 #pragma warning disable 419
 
 namespace iro4cli.Grammar {
+#pragma warning disable 3021
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using IToken = Antlr4.Runtime.IToken;
@@ -80,6 +81,13 @@ public interface IiroVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitDefinition([NotNull] iroParser.DefinitionContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="iroParser.array"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArray([NotNull] iroParser.ArrayContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="iroParser.regex"/>.

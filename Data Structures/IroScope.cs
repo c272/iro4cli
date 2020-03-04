@@ -11,7 +11,16 @@ namespace iro4cli
     /// </summary>
     public static class IroScope
     {
+        //The global list of variables.
         public static Dictionary<string, IroVariable> Variables = new Dictionary<string, IroVariable>();
+
+        //Adds a variable to the global list.
+        public static void AddVariable(string name, IroVariable var)
+        {
+            Variables.Add(name, var);
+        }
+
+        public static Func<string, bool> VariableExists = (string name) => Variables.ContainsKey(name);
     }
 
     /// <summary>

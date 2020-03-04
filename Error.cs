@@ -23,5 +23,15 @@ namespace iro4cli
 
             Environment.Exit(-1);
         }
+
+        /// <summary>
+        /// Logs a warning to the console.
+        /// </summary>
+        public static void Warn(ParserRuleContext ctx, string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("[WARN] Line " + ctx.Start.Line + " - " + msg);
+            Console.ResetColor();
+        }
     }
 }
