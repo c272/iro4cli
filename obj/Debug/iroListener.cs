@@ -44,6 +44,17 @@ public interface IiroListener : IParseTreeListener {
 	void ExitCompileUnit([NotNull] iroParser.CompileUnitContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="iroParser.block"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBlock([NotNull] iroParser.BlockContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="iroParser.block"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBlock([NotNull] iroParser.BlockContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="iroParser.statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

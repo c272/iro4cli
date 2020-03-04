@@ -41,6 +41,13 @@ public interface IiroVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitCompileUnit([NotNull] iroParser.CompileUnitContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="iroParser.block"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBlock([NotNull] iroParser.BlockContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="iroParser.statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

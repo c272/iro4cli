@@ -50,6 +50,19 @@ public partial class iroBaseListener : IiroListener {
 	public virtual void ExitCompileUnit([NotNull] iroParser.CompileUnitContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="iroParser.block"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBlock([NotNull] iroParser.BlockContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="iroParser.block"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBlock([NotNull] iroParser.BlockContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="iroParser.statement"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

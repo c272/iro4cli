@@ -8,7 +8,10 @@ grammar iro;
  * Parser Rules
  */
 
-compileUnit: (statement | sys_set)* EOF;
+compileUnit: block* EOF;
+
+//Top level statement.
+block : (statement | sys_set);
 
 //Statement, a single definition or operation.
 statement: (attribute | set | include);
