@@ -28,8 +28,18 @@ namespace iro4cli
                     Error.Fatal(context, "Defined system set did not return an attribute. Please log an issue on the repository page with the source grammar.");
                     return null;
                 }
+
+                //Add.
+                var thisAttrib = (IroAttribute)setAttrib;
+                if (IroScope.VariableExists(thisAttrib.Name))
+                {
+                    Error.Fatal(set, "Variable already exists with the name '" + thisAttrib.Name + "'.");
+                    return null;
+                }
+                IroScope.AddVariable(thisAttrib.Name, thisAttrib.Value);
             }
 
+            //Loop over statements and define those too.
             foreach (var stat in context.statement())
             {
                 var toAdd = VisitStatement(stat);
