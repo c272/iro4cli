@@ -18,7 +18,7 @@ namespace iro4cli
         /// </summary>
         public override IroVariable VisitSys_set([NotNull] iroParser.Sys_setContext context)
         {
-            //
+            return null;
         }
     }
 }
