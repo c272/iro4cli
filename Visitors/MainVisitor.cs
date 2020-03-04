@@ -16,12 +16,26 @@ namespace iro4cli
         //Master compile unit visitor.
         public override IroVariable VisitCompileUnit([NotNull] iroParser.CompileUnitContext context)
         {
-            //Define all system sets first.
-            foreach (var set in context.sys_set())
+            foreach (var block in context.block())
+            {
+                VisitBlock(block);
+            }
+
+            return null;
+        }
+
+        public override IroVariable VisitBlock([NotNull] iroParser.BlockContext context)
+        {
+            //Prepare locals.
+            IroAttribute thisAttrib = null;
+
+            //System set?
+            if (context.sys_set() != null)
             {
                 //Define all the sets.
+                var set = context.sys_set();
                 var setAttrib = VisitSys_set(set);
-                
+
                 //Is it an attribute?
                 if (!(setAttrib is IroAttribute))
                 {
@@ -29,19 +43,14 @@ namespace iro4cli
                     return null;
                 }
 
-                //Add.
-                var thisAttrib = (IroAttribute)setAttrib;
-                if (IroScope.VariableExists(thisAttrib.Name))
-                {
-                    Error.Fatal(set, "Variable already exists with the name '" + thisAttrib.Name + "'.");
-                    return null;
-                }
-                IroScope.AddVariable(thisAttrib.Name, thisAttrib.Value);
+                thisAttrib = (IroAttribute)setAttrib;
             }
 
-            //Loop over statements and define those too.
-            foreach (var stat in context.statement())
+            //Is it a statement?
+            else if (context.statement() != null)
             {
+                //Statement.
+                var stat = context.statement();
                 var toAdd = VisitStatement(stat);
 
                 //If anything comes back up, try to add it.
@@ -51,18 +60,29 @@ namespace iro4cli
                     if (!(toAdd is IroAttribute))
                     {
                         Error.Warn(stat, "Non-attribute variable reached the top of the stack, skipping.");
-                        continue;
+                        return null;
                     }
 
                     //Attempt to add.
-                    var thisAttrib = (IroAttribute)toAdd;
-                    if (IroScope.VariableExists(thisAttrib.Name))
-                    {
-                        Error.Fatal(stat, "Variable already exists with the name '" + thisAttrib.Name + "'.");
-                        return null;
-                    }
-                    IroScope.AddVariable(thisAttrib.Name, thisAttrib.Value);
+                    thisAttrib = (IroAttribute)toAdd;
                 }
+            }
+
+            //Unknown operation.
+            else
+            {
+                Error.Fatal(context, "Unknown block statement type, please submit an issue on the repository with your source grammar.");
+            }
+
+            //If a variable has been generated, try to add it to scope.
+            if (thisAttrib != null)
+            {
+                if (IroScope.VariableExists(thisAttrib.Name))
+                {
+                    Error.Fatal(context, "Variable already exists with the name '" + thisAttrib.Name + "'.");
+                    return null;
+                }
+                IroScope.AddVariable(thisAttrib.Name, thisAttrib.Value);
             }
 
             return null;
