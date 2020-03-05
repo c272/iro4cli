@@ -100,6 +100,7 @@ namespace iro4cli.Compiler
                     }
                     string value = ((IroValue)styleProperty.Value).Value;
 
+                    //Switch on the property.
                     switch (styleProperty.Key)
                     {
                         case "color":
@@ -148,12 +149,87 @@ namespace iro4cli.Compiler
                                 thisStyle.Italic = false;
                             }
                             break;
+                        default:
+                            Error.CompileWarning("Invalid property in style set '" + style.Key + "' with name '" + styleProperty.Key + "'.");
+                            continue;
                     }
                 }
 
                 //Add the style to the list.
                 pcd.Styles.Add(thisStyle);
             }
+
+            //Styles are done processing, start processing the contexts.
+            var contextsSet = (IroSet)vars["contexts"];
+            foreach (var context in contextsSet)
+            {
+                //Is the set a context?
+                if (context.Value.Type != VariableType.Set)
+                {
+                    Error.CompileWarning("Could not create context '" + context.Key + "', contexts must be sets of type 'context'.");
+                    continue;
+                }
+                if (((IroSet)context.Value).SetType != "context")
+                {
+                    Error.CompileWarning("Could not create context '" + context.Key + "', values in the contexts array must be sets of type 'context'.");
+                    continue;
+                }
+
+                var thisContext = ProcessContext(context.Key, (IroSet)context.Value);
+            }
+        }
+
+        /// <summary>
+        /// Processes a single context from the IroVariable form into an IroContext form.
+        /// </summary>
+        private static IroContext ProcessContext(string contextName, IroSet context)
+        {
+            var iroCtx = new IroContext(contextName);
+
+            //Loop over the values in the context, process depending on type.
+            foreach (var value in context.Values)
+            {
+                //An include.
+                if (value is IroInclude)
+                {
+                    iroCtx.Members.Add(new ContextMember()
+                    {
+                        Data = ((IroInclude)value).Value,
+                        Type = ContextType.Include
+                    });
+                }
+
+                //A set of a given type.
+                else if (value is IroSet)
+                {
+                    switch (((IroSet)value).SetType)
+                    {
+                        case "inline_push":
+                            iroCtx.Members.Add(ParseInlinePush((IroSet)value));
+                            break;
+                        case "pattern":
+                            iroCtx.Members.Add(ParsePattern((IroSet)value));
+                            break;
+                        case "pop":
+                            throw new NotImplementedException();
+                        case "push":
+                            throw new NotImplementedException();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Parses a single pattern from a context.
+        /// </summary>
+        private static ContextMember ParsePattern(IroSet value)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static ContextMember ParseInlinePush(IroSet value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

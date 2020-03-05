@@ -9,11 +9,12 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>iro4cli</RootNamespace>
     <AssemblyName>iro4cli</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -54,6 +55,7 @@
     <Compile Include="ANTLRDebug.cs" />
     <Compile Include="Compiler\Compiler.cs" />
     <Compile Include="Compiler\IroCompileTarget.cs" />
+    <Compile Include="Data Structures\Compilation\IroContext.cs" />
     <Compile Include="Data Structures\Compilation\IroPrecompileData.cs" />
     <Compile Include="Data Structures\Compilation\IroStyle.cs" />
     <Compile Include="Data Structures\Parsing\IroAttribute.cs" />
