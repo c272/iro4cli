@@ -115,6 +115,19 @@ public partial class iroBaseListener : IiroListener {
 	public virtual void ExitSet([NotNull] iroParser.SetContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="iroParser.typed_set"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterTyped_set([NotNull] iroParser.Typed_setContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="iroParser.typed_set"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitTyped_set([NotNull] iroParser.Typed_setContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="iroParser.include"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

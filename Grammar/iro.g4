@@ -23,7 +23,8 @@ attribute: IDENTIFIER definition;
 sys_set: IDENTIFIER ARRAY_SYM? SET_OPEN statement* SET_CLOSE;
 
 //Defining a normal named/unnamed set.
-set: IDENTIFIER? ARRAY_SYM? COLON_SYM IDENTIFIER SET_OPEN statement* SET_CLOSE;
+set: IDENTIFIER? ARRAY_SYM? COLON_SYM typed_set;
+typed_set: IDENTIFIER SET_OPEN statement* SET_CLOSE;
 
 //Including an external set.
 include: COLON_SYM INCLUDE QUOTE_SYM IDENTIFIER QUOTE_SYM;

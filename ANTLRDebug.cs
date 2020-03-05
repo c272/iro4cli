@@ -39,7 +39,7 @@ namespace iro4cli
             //Printing parse tree.
             Console.WriteLine("ANTLR Parse Tree:");
             Console.WriteLine(tree.ToStringTree(parser));
-            Console.WriteLine("-\nStatement Length: " + tree.statement().Length);
+            Console.WriteLine("-\nStatement Length: " + tree.block().Length);
             Console.WriteLine("");
         }
     }
