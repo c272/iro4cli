@@ -27,7 +27,7 @@ set: IDENTIFIER? ARRAY_SYM? COLON_SYM typed_set;
 typed_set: IDENTIFIER SET_OPEN statement* SET_CLOSE;
 
 //Including an external set.
-include: COLON_SYM INCLUDE QUOTE_SYM IDENTIFIER QUOTE_SYM;
+include: COLON_SYM INCLUDE QUOTE_SYM IDENTIFIER QUOTE_SYM SEMICOLON_SYM;
 
 //Definition, possible right hand sides of attribute.
 definition: ARRAY_SYM? (EQUALS_SYM | REG_EQUALS_SYM) (IDENTIFIER //Literal (eg. myname)
@@ -70,7 +70,7 @@ QUOTE_SYM: '"';
 REF_SYM: '$';
 
 //An identifier.
-IDENTIFIER: [A-Za-z0-9_\\-\\.]+;
+IDENTIFIER: [${}A-Za-z0-9_.-]+;
 
 //Comments start with "#" in Iro.
 COMMENT: '#' (.)*? '\n' -> channel(HIDDEN);

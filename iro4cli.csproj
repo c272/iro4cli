@@ -52,12 +52,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ANTLRDebug.cs" />
-    <Compile Include="Data Structures\IroAttribute.cs" />
-    <Compile Include="Data Structures\IroInclude.cs" />
-    <Compile Include="Data Structures\IroList.cs" />
-    <Compile Include="Data Structures\IroScope.cs" />
-    <Compile Include="Data Structures\IroSet.cs" />
-    <Compile Include="Data Structures\IroValues.cs" />
+    <Compile Include="Compiler\Compiler.cs" />
+    <Compile Include="Compiler\IroCompileTarget.cs" />
+    <Compile Include="Data Structures\Compilation\IroPrecompileData.cs" />
+    <Compile Include="Data Structures\Compilation\IroStyle.cs" />
+    <Compile Include="Data Structures\Parsing\IroAttribute.cs" />
+    <Compile Include="Data Structures\Parsing\IroInclude.cs" />
+    <Compile Include="Data Structures\Parsing\IroList.cs" />
+    <Compile Include="Data Structures\Parsing\IroScope.cs" />
+    <Compile Include="Data Structures\Parsing\IroSet.cs" />
+    <Compile Include="Data Structures\Parsing\IroValues.cs" />
     <Compile Include="Emulator.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Grammar\iro.g4.lexer.cs">
@@ -68,7 +72,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Data Structures\IroResult.cs" />
     <Compile Include="Visitors\MainVisitor.cs" />
     <Compile Include="Visitors\SetVisitor.cs" />
   </ItemGroup>
