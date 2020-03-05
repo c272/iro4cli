@@ -25,6 +25,28 @@ namespace iro4cli
         }
 
         /// <summary>
+        /// Exits the program with a compiler error message.
+        /// </summary>
+        public static void Compile(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("[ERROR] Compile Failed  - " + msg);
+            Console.ResetColor();
+
+            Environment.Exit(-1);
+        }
+
+        /// <summary>
+        /// Sends a compile warning to the console.
+        /// </summary>
+        public static void CompileWarning(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("[WARN] Compile - " + msg);
+            Console.ResetColor();
+        }
+
+        /// <summary>
         /// Logs a warning to the console.
         /// </summary>
         public static void Warn(ParserRuleContext ctx, string msg)

@@ -15,6 +15,7 @@ namespace iro4cli
         public string SetType = null;
         public IroSet(string setType=null)
         {
+            Type = VariableType.Set;
             SetType = setType;
         }
 

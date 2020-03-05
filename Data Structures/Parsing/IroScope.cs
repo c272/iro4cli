@@ -38,6 +38,8 @@ namespace iro4cli
     {
         Array,
         Regex,
-        Value
+        Value,
+        Set,
+        Include
     }
 }

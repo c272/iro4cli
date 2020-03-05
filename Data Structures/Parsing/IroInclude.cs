@@ -12,6 +12,9 @@ namespace iro4cli
     /// </summary>
     public class IroInclude : IroValue
     {
-        public IroInclude(string val) : base(val) { }
+        public IroInclude(string val) : base(val)
+        {
+            Type = VariableType.Include;
+        }
     }
 }
