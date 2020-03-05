@@ -99,6 +99,17 @@ public interface IiroListener : IParseTreeListener {
 	void ExitSet([NotNull] iroParser.SetContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="iroParser.typed_set"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTyped_set([NotNull] iroParser.Typed_setContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="iroParser.typed_set"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTyped_set([NotNull] iroParser.Typed_setContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="iroParser.include"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

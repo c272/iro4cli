@@ -24,6 +24,9 @@ namespace iro4cli
             return null;
         }
 
+        /// <summary>
+        /// Visits a top level statement containing an attribute definition or system set.
+        /// </summary>
         public override IroVariable VisitBlock([NotNull] iroParser.BlockContext context)
         {
             //Prepare locals.

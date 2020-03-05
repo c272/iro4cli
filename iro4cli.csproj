@@ -38,6 +38,9 @@
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
       <HintPath>packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="shortid, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\shortid.2.0.0\lib\net45\shortid.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,8 +53,10 @@
   <ItemGroup>
     <Compile Include="ANTLRDebug.cs" />
     <Compile Include="Data Structures\IroAttribute.cs" />
+    <Compile Include="Data Structures\IroInclude.cs" />
     <Compile Include="Data Structures\IroList.cs" />
     <Compile Include="Data Structures\IroScope.cs" />
+    <Compile Include="Data Structures\IroSet.cs" />
     <Compile Include="Data Structures\IroValues.cs" />
     <Compile Include="Emulator.cs" />
     <Compile Include="Error.cs" />

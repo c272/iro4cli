@@ -76,6 +76,13 @@ public interface IiroVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitSet([NotNull] iroParser.SetContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="iroParser.typed_set"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTyped_set([NotNull] iroParser.Typed_setContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="iroParser.include"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
