@@ -150,6 +150,9 @@ namespace iro4cli.Compiler
                             break;
                     }
                 }
+
+                //Add the style to the list.
+                pcd.Styles.Add(thisStyle);
             }
         }
     }
