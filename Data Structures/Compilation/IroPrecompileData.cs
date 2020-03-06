@@ -14,5 +14,6 @@ namespace iro4cli.Compiler
         public string Name;
         public List<string> FileExtensions = new List<string>();
         public List<IroStyle> Styles = new List<IroStyle>();
+        public List<IroContext> Contexts = new List<IroContext>();
     }
 }
