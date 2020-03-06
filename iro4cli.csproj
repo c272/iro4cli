@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="ANTLRDebug.cs" />
     <Compile Include="Compiler\Compiler.cs" />
+    <Compile Include="Compiler\CompileResult.cs" />
     <Compile Include="Compiler\IroCompileTarget.cs" />
     <Compile Include="Data Structures\Compilation\IroContext.cs" />
     <Compile Include="Data Structures\Compilation\IroPrecompileData.cs" />

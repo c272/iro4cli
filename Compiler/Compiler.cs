@@ -8,7 +8,7 @@ namespace iro4cli.Compiler
 {
     public static class Compiler
     {
-        public static void Compile(Dictionary<string, IroVariable> vars)
+        public static void Compile(Dictionary<string, IroVariable> vars, params ICompileTarget[] targets)
         {
             var pcd = new IroPrecompileData();
 
@@ -175,7 +175,14 @@ namespace iro4cli.Compiler
                     continue;
                 }
 
-                var thisContext = ProcessContext(context.Key, (IroSet)context.Value);
+                pcd.Contexts.Add(ProcessContext(context.Key, (IroSet)context.Value));
+            }
+
+            //Use precompile data to process the given targets.
+            List<CompileResult>
+            foreach (var target in targets)
+            {
+                compileResults.Add(target.Compile(pcd));
             }
         }
 
@@ -217,6 +224,8 @@ namespace iro4cli.Compiler
                     }
                 }
             }
+
+            return iroCtx;
         }
 
         /// <summary>
@@ -224,12 +233,159 @@ namespace iro4cli.Compiler
         /// </summary>
         private static ContextMember ParsePattern(IroSet value)
         {
-            throw new NotImplementedException();
+            //Find the mandatory "styles" and "regex" properties.
+            if (!value.ContainsKey("regex") || !value.ContainsKey("styles"))
+            {
+                Error.Compile("Pattern missing a required attribute (must have 'styles' and 'regex').");
+                return null;
+            }
+
+            //Valid types?
+            if (value["styles"].Type != VariableType.Array)
+            {
+                Error.Compile("Pattern 'styles' attribute must be an array.");
+                return null;
+            }
+            if (value["regex"].Type != VariableType.Regex)
+            {
+                Error.Compile("Pattern 'regex' attribute must be a regex value.");
+                return null;
+            }
+
+            //Get them out.
+            string regex = ((IroRegex)value["regex"]).StringValue;
+            List<string> styles = new List<string>();
+            foreach (var style in ((IroList)value["styles"]))
+            {
+                //Is the value a name?
+                if (!(style is IroValue))
+                {
+                    Error.CompileWarning("Failed to add pattern style for pattern with regex '" + regex + "', array member is not a value.");
+                    continue;
+                }
+
+                //Get the name out and add it.
+                styles.Add(((IroValue)style).Value);
+            }
+
+            //Create a pattern.
+            return new PatternContextMember()
+            {
+                Data = regex,
+                Styles = styles,
+                Type = ContextType.Pattern
+            };
         }
 
-        private static ContextMember ParseInlinePush(IroSet value)
+        /// <summary>
+        /// Parses a single inline push context member in Iro.
+        /// </summary>
+        private static ContextMember ParseInlinePush(IroSet ilp)
         {
-            throw new NotImplementedException();
+            //Find the required elements 'regex', 'styles' and 'pop'.
+            if (!ilp.ContainsKey("regex") || !ilp.ContainsKey("styles"))
+            {
+                Error.Compile("Required attribute is missing from inline push (must have members 'regex', 'styles').");
+                return null;
+            }
+            if (!ilp.ContainsKey("pop") && !ilp.ContainsKey("eol_pop"))
+            {
+                Error.Compile("Inline push patterns must have a 'pop' or 'eol_pop' set to know when to end the state..");
+                return null;
+            }
+            if (ilp.ContainsKey("pop") && ilp.ContainsKey("eol_pop"))
+            {
+                Error.Compile("Inline push patterns cannot hav both a 'pop' and an 'eol_pop', you must use one or the other.");
+                return null;
+            }
+
+            //Verify their types.
+            if (!(ilp["regex"] is IroRegex))
+            {
+                Error.Compile("Inline push attribute 'regex' must be a regex value.");
+                return null;
+            }
+            if (!(ilp["styles"] is IroList))
+            {
+                Error.Compile("Inline push attribute 'styles' must be an array value.");
+                return null;
+            }
+            if (ilp.ContainsKey("pop") && !(ilp["pop"] is IroSet))
+            {
+                Error.Compile("Pop attributes must be a set.");
+                return null;
+            }
+            if (ilp.ContainsKey("eol_pop") && !(ilp["eol_pop"] is IroSet))
+            {
+                Error.Compile("End of line pop attributes must be a set.");
+                return null;
+            }
+
+            //Get out the regex and style values.
+            string regex = ((IroRegex)ilp["regex"]).StringValue;
+            List<string> styles = new List<string>();
+            foreach (var style in ((IroList)ilp["styles"]))
+            {
+                //Is the value a name?
+                if (!(style is IroValue))
+                {
+                    Error.CompileWarning("Failed to add pattern style for pattern with regex '" + regex + "', array member is not a value.");
+                    continue;
+                }
+
+                //Get the name out and add it.
+                styles.Add(((IroValue)style).Value);
+            }
+
+            //Generate the pop (if it's there).
+            List<string> popStyles = new List<string>();
+            string popRegex;
+            if (ilp.ContainsKey("pop"))
+            {
+                //Parse the 'pop'.
+                var pop = ((IroSet)ilp["pop"]);
+                if (!pop.ContainsKey("regex") || pop["regex"].Type != VariableType.Regex)
+                {
+                    Error.Compile("Inline push 'pop' messages must be of type 'set'.");
+                    return null;
+                }
+                if (!pop.ContainsKey("styles") || pop["styles"].Type != VariableType.Array)
+                {
+                    Error.Compile("Inline push 'styles' attribute must be of type 'array'.");
+                }
+
+                //regex
+                popRegex = ((IroRegex)pop["regex"]).StringValue;
+
+                //styles
+                foreach (var style in ((IroList)ilp["styles"]))
+                {
+                    if (!(style is IroValue))
+                    {
+                        Error.CompileWarning("Failed to add 'pop' style for pattern with regex '" + regex + "', array member is not a value.");
+                        continue;
+                    }
+
+                    //Get the name out and add it.
+                    popStyles.Add(((IroValue)style).Value);
+                }
+            }
+            else
+            {
+                //eol_pop
+                popStyles = styles;
+                popRegex = "(\n|\r\n)";
+            }
+
+            //Create the module and return it.
+            return new InlinePushContextMember()
+            {
+                Data = regex,
+                Styles = styles,
+                PopData = popRegex,
+                PopStyles = popStyles,
+                Type = ContextType.InlinePush
+            };
         }
     }
 }
