@@ -8,7 +8,7 @@ namespace iro4cli.Compiler
 {
     public static class Compiler
     {
-        public static void Compile(Dictionary<string, IroVariable> vars, params ICompileTarget[] targets)
+        public static List<CompileResult> Compile(Dictionary<string, IroVariable> vars, params ICompileTarget[] targets)
         {
             var pcd = new IroPrecompileData();
 
@@ -16,22 +16,22 @@ namespace iro4cli.Compiler
             if (!vars.ContainsKey("name"))
             {
                 Error.Compile("No 'name' variable defined to name the grammar.");
-                return;
+                return null;
             }
             if (!vars.ContainsKey("file_extensions"))
             {
                 Error.Compile("No 'file_extensions' variable defined to name the file extensions compatible with this grammar.");
-                return;
+                return null;
             }
             if (vars["name"].Type != VariableType.Value)
             {
                 Error.Compile("The 'name' variable must be a string.");
-                return;
+                return null;
             }
             if (vars["file_extensions"].Type != VariableType.Array)
             {
                 Error.Compile("The 'file_extensions' variable must define an array of file extensions (currently not an array).");
-                return;
+                return null;
             }
 
             //Set name.
@@ -45,7 +45,7 @@ namespace iro4cli.Compiler
                 if (ext.Type != VariableType.Value)
                 {
                     Error.Compile("All file extensions must be string values (detected type " + ext.Type.ToString() + " in array).");
-                    return;
+                    return null;
                 }
 
                 pcd.FileExtensions.Add(((IroValue)ext).Value);
@@ -60,12 +60,12 @@ namespace iro4cli.Compiler
             if (!vars.ContainsKey("styles") || vars["styles"].Type != VariableType.Set)
             {
                 Error.Compile("The 'styles' set does not exist, you must define a list of styles to use for your grammar.");
-                return;
+                return null;
             }
             if (!vars.ContainsKey("contexts") || vars["contexts"].Type != VariableType.Set)
             {
                 Error.Compile("The 'contexts' set does not exist, you must define a list of contexts to pattern match your styles to.");
-                return;
+                return null;
             }
 
             //Crawl through the styles set and define them in the list.
@@ -179,11 +179,13 @@ namespace iro4cli.Compiler
             }
 
             //Use precompile data to process the given targets.
-            List<CompileResult>
+            List<CompileResult> results = new List<CompileResult>();
             foreach (var target in targets)
             {
-                compileResults.Add(target.Compile(pcd));
+                results.Add(target.Compile(pcd));
             }
+
+            return results;
         }
 
         /// <summary>
