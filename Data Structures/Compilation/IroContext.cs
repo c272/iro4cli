@@ -57,6 +57,12 @@ namespace iro4cli
         InlinePush,
         Pattern,
         Pop,
-        Push
+        Push,
+        UID,
+        SpaceUnimportant,
+        Enabled,
+        DefaultStyle,
+        Description,
+        CaseSensitive
     }
 }
