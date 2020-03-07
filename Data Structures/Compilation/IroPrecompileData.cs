@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace iro4cli.Compiler
+namespace iro4cli.Compile
 {
     /// <summary>
     /// Data required before compile targets can all be run.

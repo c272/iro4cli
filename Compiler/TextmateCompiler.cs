@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace iro4cli.Compiler
+namespace iro4cli.Compile
 {
     public class TextmateCompiler : ICompileTarget
     {
@@ -58,6 +58,7 @@ namespace iro4cli.Compiler
             text.AppendLine("</array>");
 
             //todo
+            return null;
         }
     }
 }

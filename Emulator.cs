@@ -17,7 +17,7 @@ namespace iro4cli
         /// <summary>
         /// Runs the Iro emulator with a given input.
         /// </summary>
-        public static void Run(string input)
+        public static Dictionary<string, IroVariable> Run(string input)
         {
             //Create input stream & lexer.
             var s_chars = new AntlrInputStream(input);
@@ -40,6 +40,8 @@ namespace iro4cli
             {
                 Console.WriteLine(variable.Key + " - " + variable.Value.GetType().ToString());
             }
+
+            return IroScope.Variables;
         }
     }
 }

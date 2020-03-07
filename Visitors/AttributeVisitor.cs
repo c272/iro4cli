@@ -61,7 +61,16 @@ namespace iro4cli
                 //Check a regex is used on the right hand side.
                 if (context.regex() == null)
                 {
-                    Error.Fatal(context, "Regular expression equality symbol used, but a regex is not assigned.");
+                    if (context.constant_ref() == null)
+                    {
+                        Error.Fatal(context, "Regular expression equality symbol used, but a regex is not assigned.");
+                    }
+                    else
+                    {
+                        //Return the literal value on the right.
+                        return new IroReference(context.constant_ref().IDENTIFIER().GetText());
+                    }
+
                     return null;
                 }
 

@@ -63,6 +63,7 @@
     <Compile Include="Data Structures\Parsing\IroAttribute.cs" />
     <Compile Include="Data Structures\Parsing\IroInclude.cs" />
     <Compile Include="Data Structures\Parsing\IroList.cs" />
+    <Compile Include="Data Structures\Parsing\IroReference.cs" />
     <Compile Include="Data Structures\Parsing\IroScope.cs" />
     <Compile Include="Data Structures\Parsing\IroSet.cs" />
     <Compile Include="Data Structures\Parsing\IroValues.cs" />

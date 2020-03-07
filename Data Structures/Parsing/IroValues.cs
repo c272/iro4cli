@@ -28,6 +28,9 @@ namespace iro4cli
 
         public IroRegex(string rawVal)
         {
+            //Trim the end and start of newlines.
+            rawVal = rawVal.Trim('\n', '\r', '\t');
+
             //Put the regex in.
             Value = new Regex(rawVal);
             StringValue = rawVal;

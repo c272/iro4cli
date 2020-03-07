@@ -40,15 +40,17 @@ definition: ARRAY_SYM? (EQUALS_SYM | REG_EQUALS_SYM) (IDENTIFIER //Literal (eg. 
 array: (IDENTIFIER COMMA_SYM)+ IDENTIFIER;
 
 //A (possibly invalid) regular expression.
-regex: L_BRACKET (.)*? R_BRACKET;
+regex: REGEX;
 
 //Reference to a previously defined constant.
 constant_ref: REF_SYM REF_SYM SET_OPEN IDENTIFIER SET_CLOSE;
-			
 
 /*
  * Lexer Rules
  */
+
+//Regular expression.
+REGEX: L_BRACKET (~[()]+ | REGEX) R_BRACKET;
 
 //Reserved words.
 INCLUDE: 'include';
@@ -62,15 +64,15 @@ L_SQUARE_BRACKET: '[';
 R_SQUARE_BRACKET: ']';
 SET_OPEN: '{';
 SET_CLOSE: '}';
-L_BRACKET: '(';
-R_BRACKET: ')';
 COLON_SYM: ':';
 SEMICOLON_SYM: ';';
 QUOTE_SYM: '"';
 REF_SYM: '$';
+L_BRACKET: '(';
+R_BRACKET: ')';
 
 //An identifier.
-IDENTIFIER: [${}A-Za-z0-9_.-]+;
+IDENTIFIER: [A-Za-z0-9_.-]+;
 
 //Comments start with "#" in Iro.
 COMMENT: '#' (.)*? '\n' -> channel(HIDDEN);

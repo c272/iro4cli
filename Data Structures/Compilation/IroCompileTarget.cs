@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace iro4cli.Compiler
+namespace iro4cli.Compile
 {
     /// <summary>
     /// An abstract compile target for creating code from Iro trees.
