@@ -21,46 +21,11 @@ namespace iro4cli.Compile
             Variables = vars;
             var pcd = new IroPrecompileData();
 
-            //Verify that name, file extensions exist.
-            if (!vars.ContainsKey("name"))
-            {
-                Error.Compile("No 'name' variable defined to name the grammar.");
-                return null;
-            }
-            if (!vars.ContainsKey("file_extensions"))
-            {
-                Error.Compile("No 'file_extensions' variable defined to name the file extensions compatible with this grammar.");
-                return null;
-            }
-            if (vars["name"].Type != VariableType.Value)
-            {
-                Error.Compile("The 'name' variable must be a string.");
-                return null;
-            }
-            if (vars["file_extensions"].Type != VariableType.Array)
-            {
-                Error.Compile("The 'file_extensions' variable must define an array of file extensions (currently not an array).");
-                return null;
-            }
+            //Parse all the top level flags.
+            ParseTopLevelFlags(vars, ref pcd);
 
-            //Set name.
-            string name = ((IroValue)vars["name"]).Value;
-            pcd.Name = name;
-
-            //Set file extensions.
-            IroList fileExts = (IroList)vars["file_extensions"];
-            foreach (var ext in fileExts.Contents)
-            {
-                if (ext.Type != VariableType.Value)
-                {
-                    Error.Compile("All file extensions must be string values (detected type " + ext.Type.ToString() + " in array).");
-                    return null;
-                }
-
-                pcd.FileExtensions.Add(((IroValue)ext).Value);
-            }
-
-            //todo: parse other possible top level flags
+            //todo: parse other top level flags
+            Error.CompileWarning("Some top-level flags are missing and/or not implemented yet.");
 
             //Find constants.
             var constants = vars.Select(x => x.Value.Type == VariableType.Value && x.Key.StartsWith("__")).Cast<IroValue>();
@@ -116,6 +81,8 @@ namespace iro4cli.Compile
                         case "colour":
                             thisStyle.Colour = value;
                             break;
+                        case "background_colour":
+                        case "background_color":
                         case "ace_scope":
                             thisStyle.AceScope = value;
                             break;
@@ -198,6 +165,79 @@ namespace iro4cli.Compile
         }
 
         /// <summary>
+        /// Parses all the possible top level flags for Iro.
+        /// </summary>
+        private static void ParseTopLevelFlags(Dictionary<string, IroVariable> vars, ref IroPrecompileData pcd)
+        {
+            //Verify that the required keys exist.
+            if (!vars.ContainsKey("name"))
+            {
+                Error.Compile("No 'name' variable defined to name the grammar.");
+                return;
+            }
+            if (!vars.ContainsKey("file_extensions"))
+            {
+                Error.Compile("No 'file_extensions' variable defined to name the file extensions compatible with this grammar.");
+                return;
+            }
+            if (vars["name"].Type != VariableType.Value)
+            {
+                Error.Compile("The 'name' variable must be a string.");
+                return;
+            }
+            if (vars["file_extensions"].Type != VariableType.Array)
+            {
+                Error.Compile("The 'file_extensions' variable must define an array of file extensions (currently not an array).");
+                return;
+            }
+
+            //Set name.
+            pcd.Name = ((IroValue)vars["name"]).Value;
+
+            //Set file extensions.
+            IroList fileExts = (IroList)vars["file_extensions"];
+            foreach (var ext in fileExts.Contents)
+            {
+                if (ext.Type != VariableType.Value)
+                {
+                    Error.Compile("All file extensions must be string values (detected type " + ext.Type.ToString() + " in array).");
+                    return;
+                }
+
+                pcd.FileExtensions.Add(((IroValue)ext).Value);
+            }
+
+            //Parsing other top-level flags.
+            //TEXTMATE UUID
+            GetTopLevelProperty("textmate_uuid", ref pcd.UUID, ref vars);
+            //DESCRIPTION
+            GetTopLevelProperty("description", ref pcd.Description, ref vars);
+            //COLOUR
+            GetTopLevelProperty("color", ref pcd.Colour, ref vars);
+            //BACKGROUND COLOUR
+            GetTopLevelProperty("background_color", ref pcd.BackgroundColour, ref vars);
+        }
+        
+        /// <summary>
+        /// Sets a single top level property given it's name and the value to set.
+        /// </summary>
+        private static void GetTopLevelProperty(string propertyName, ref string toSet, ref Dictionary<string, IroVariable> vars)
+        {
+            if (vars.ContainsKey(propertyName))
+            {
+                if (!(vars[propertyName] is IroValue))
+                {
+                    Error.CompileWarning("Property '" + propertyName + "' must be a value type, ignoring.");
+                }
+                else
+                {
+                    toSet = ((IroValue)vars[propertyName]).Value;
+                }
+            }
+            else { toSet = ""; }
+        }
+
+        /// <summary>
         /// Processes a single context from the IroVariable form into an IroContext form.
         /// </summary>
         private static IroContext ProcessContext(string contextName, IroSet context)
@@ -220,7 +260,7 @@ namespace iro4cli.Compile
                 }
 
                 //A descriptive value for a set.
-                if (value is IroValue)
+                else if (value is IroValue)
                 {
                     var valueType = (IroValue)value;
                     switch (kvp.Key)
@@ -268,7 +308,7 @@ namespace iro4cli.Compile
                             });
                             break;
                         default:
-                            Error.CompileWarning("Unrecognized property in context, must be one of:");
+                            Error.CompileWarning("Unrecognized property '" + kvp.Key + "' in context, must be one of:");
                             Error.CompileWarning("description, case_sensitive, default_style, enabled, space_unimportant, uid");
                             break;
                     }
