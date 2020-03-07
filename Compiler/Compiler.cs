@@ -46,7 +46,7 @@ namespace iro4cli.Compile
             var stylesSet = (IroSet)vars["styles"];
             foreach (var style in stylesSet)
             {
-                var thisStyle = new IroStyle();
+                var thisStyle = new IroStyle(style.Key);
                 
                 //Make sure this is an object, can't have any attributes in the styles list.
                 if (style.Value.Type != VariableType.Set)
@@ -155,7 +155,7 @@ namespace iro4cli.Compile
             }
 
             //Use precompile data to process the given targets.
-            List<CompileResult> results = new List<CompileResult>();
+            var results = new List<CompileResult>();
             foreach (var target in targets)
             {
                 results.Add(target.Compile(pcd));
@@ -255,7 +255,7 @@ namespace iro4cli.Compile
                     iroCtx.Members.Add(new ContextMember()
                     {
                         Data = ((IroInclude)value).Value,
-                        Type = ContextType.Include
+                        Type = ContextMemberType.Include
                     });
                 }
 
@@ -269,42 +269,42 @@ namespace iro4cli.Compile
                             iroCtx.Members.Add(new ContextMember()
                             {
                                 Data = valueType.Value,
-                                Type = ContextType.Description
+                                Type = ContextMemberType.Description
                             });
                             break;
                         case "case_sensitive":
                             iroCtx.Members.Add(new ContextMember()
                             {
                                 Data = valueType.Value,
-                                Type = ContextType.CaseSensitive
+                                Type = ContextMemberType.CaseSensitive
                             });
                             break;
                         case "default_style":
                             iroCtx.Members.Add(new ContextMember()
                             {
                                 Data = valueType.Value,
-                                Type = ContextType.DefaultStyle
+                                Type = ContextMemberType.DefaultStyle
                             });
                             break;
                         case "enabled":
                             iroCtx.Members.Add(new ContextMember()
                             {
                                 Data = valueType.Value,
-                                Type = ContextType.Enabled
+                                Type = ContextMemberType.Enabled
                             });
                             break;
                         case "space_unimportant":
                             iroCtx.Members.Add(new ContextMember()
                             {
                                 Data = valueType.Value,
-                                Type = ContextType.SpaceUnimportant
+                                Type = ContextMemberType.SpaceUnimportant
                             });
                             break;
                         case "uid":
                             iroCtx.Members.Add(new ContextMember()
                             {
                                 Data = valueType.Value,
-                                Type = ContextType.UID
+                                Type = ContextMemberType.UID
                             });
                             break;
                         default:
@@ -407,7 +407,7 @@ namespace iro4cli.Compile
             {
                 Data = regex,
                 Styles = styles,
-                Type = ContextType.Pattern
+                Type = ContextMemberType.Pattern
             };
         }
 
@@ -550,6 +550,31 @@ namespace iro4cli.Compile
                 popRegex = "(\n|\r\n)";
             }
 
+            //Get all patterns and includes out.
+            var patterns = ilp.Where(x => x.Value is IroSet && ((IroSet)x.Value).SetType == "pattern")
+                              .Select(x => x.Value)
+                              .Cast<IroSet>();
+
+            var includes = ilp.Where(x => x.Value is IroInclude)
+                              .Select(x => x.Value)
+                              .Cast<IroValue>();
+
+            var ctxMems = new List<ContextMember>();
+
+            //Parse them into the context list.
+            foreach (var pattern in patterns)
+            {
+                ctxMems.Add(ParsePattern(pattern));
+            }
+            foreach (var include in includes)
+            {
+                ctxMems.Add(new ContextMember()
+                {
+                    Data = include.Value,
+                    Type = ContextMemberType.Include
+                });
+            }
+
             //Create the module and return it.
             return new InlinePushContextMember()
             {
@@ -557,7 +582,8 @@ namespace iro4cli.Compile
                 Styles = styles,
                 PopData = popRegex,
                 PopStyles = popStyles,
-                Type = ContextType.InlinePush
+                Patterns = ctxMems,
+                Type = ContextMemberType.InlinePush
             };
         }
 

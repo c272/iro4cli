@@ -11,9 +11,12 @@ namespace iro4cli
     /// </summary>
     public class IroStyle
     {
+        //The name of the style.
+        public string Name;
+
         //Whether the text should be bold/italic for CSS generation.
         public bool Bold = false;
-        public bool Italic;
+        public bool Italic = false;
         public string Colour = null;
         public string BackgroundColour = null;
 
@@ -22,5 +25,10 @@ namespace iro4cli
         public string AceScope = null;
         public string TextmateScope = null;
         public string PygmentsScope = null;
+
+        public IroStyle(string name)
+        {
+            Name = name;
+        }
     }
 }

@@ -27,6 +27,7 @@ namespace iro4cli
     {
         public string PopData;
         public List<string> PopStyles = new List<string>();
+        public List<ContextMember> Patterns = new List<ContextMember>();
     }
 
     /// <summary>
@@ -42,27 +43,25 @@ namespace iro4cli
     /// </summary>
     public class ContextMember
     {
-        public ContextType Type;
+        public ContextMemberType Type;
         public string Data;
     }
 
     /// <summary>
     /// Types of context members.
     /// </summary>
-    public enum ContextType 
+    public enum ContextMemberType 
     { 
-        EOLPop,
-        EOLPush,
         Include,
         InlinePush,
         Pattern,
         Pop,
         Push,
-        UID,
         SpaceUnimportant,
         Enabled,
         DefaultStyle,
         Description,
-        CaseSensitive
+        CaseSensitive,
+        UID
     }
 }
