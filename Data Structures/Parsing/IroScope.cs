@@ -40,6 +40,7 @@ namespace iro4cli
         Regex,
         Value,
         Set,
-        Include
+        Include,
+        Reference
     }
 }

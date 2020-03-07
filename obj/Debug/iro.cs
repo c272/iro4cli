@@ -30,12 +30,11 @@ using DFA = Antlr4.Runtime.Dfa.DFA;
 
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.6.6")]
 [System.CLSCompliant(false)]
-public partial class iroParser : Parser {
+public partial class iro : Parser {
 	public const int
-		REGEX=1, INCLUDE=2, REG_EQUALS_SYM=3, EQUALS_SYM=4, ARRAY_SYM=5, COMMA_SYM=6, 
-		L_SQUARE_BRACKET=7, R_SQUARE_BRACKET=8, SET_OPEN=9, SET_CLOSE=10, COLON_SYM=11, 
-		SEMICOLON_SYM=12, QUOTE_SYM=13, REF_SYM=14, L_BRACKET=15, R_BRACKET=16, 
-		IDENTIFIER=17, COMMENT=18, WS=19, UNKNOWN_SYMBOL=20;
+		IDENTIFIER=1, ARRAY_SYM=2, SET_OPEN=3, SET_CLOSE=4, COLON_SYM=5, INCLUDE=6, 
+		QUOTE_SYM=7, SEMICOLON_SYM=8, EQUALS_SYM=9, REG_EQUALS_SYM=10, COMMA_SYM=11, 
+		REGEX=12, REF_SYM=13;
 	public const int
 		RULE_compileUnit = 0, RULE_block = 1, RULE_statement = 2, RULE_attribute = 3, 
 		RULE_sys_set = 4, RULE_set = 5, RULE_typed_set = 6, RULE_include = 7, 
@@ -46,14 +45,11 @@ public partial class iroParser : Parser {
 	};
 
 	private static readonly string[] _LiteralNames = {
-		null, null, "'include'", "'\\='", "'='", "'[]'", "','", "'['", "']'", 
-		"'{'", "'}'", "':'", "';'", "'\"'", "'$'", "'('", "')'"
 	};
 	private static readonly string[] _SymbolicNames = {
-		null, "REGEX", "INCLUDE", "REG_EQUALS_SYM", "EQUALS_SYM", "ARRAY_SYM", 
-		"COMMA_SYM", "L_SQUARE_BRACKET", "R_SQUARE_BRACKET", "SET_OPEN", "SET_CLOSE", 
-		"COLON_SYM", "SEMICOLON_SYM", "QUOTE_SYM", "REF_SYM", "L_BRACKET", "R_BRACKET", 
-		"IDENTIFIER", "COMMENT", "WS", "UNKNOWN_SYMBOL"
+		null, "IDENTIFIER", "ARRAY_SYM", "SET_OPEN", "SET_CLOSE", "COLON_SYM", 
+		"INCLUDE", "QUOTE_SYM", "SEMICOLON_SYM", "EQUALS_SYM", "REG_EQUALS_SYM", 
+		"COMMA_SYM", "REGEX", "REF_SYM"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -100,13 +96,13 @@ public partial class iroParser : Parser {
 
 	public override string SerializedAtn { get { return _serializedATN; } }
 
-	public iroParser(ITokenStream input)
+	public iro(ITokenStream input)
 		: base(input)
 	{
 		_interp = new ParserATNSimulator(this,_ATN);
 	}
 	public partial class CompileUnitContext : ParserRuleContext {
-		public ITerminalNode Eof() { return GetToken(iroParser.Eof, 0); }
+		public ITerminalNode Eof() { return GetToken(iro.Eof, 0); }
 		public BlockContext[] block() {
 			return GetRuleContexts<BlockContext>();
 		}
@@ -144,7 +140,7 @@ public partial class iroParser : Parser {
 			State = 27;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ARRAY_SYM) | (1L << COLON_SYM) | (1L << IDENTIFIER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << ARRAY_SYM) | (1L << COLON_SYM))) != 0)) {
 				{
 				{
 				State = 24; block();
@@ -302,7 +298,7 @@ public partial class iroParser : Parser {
 	}
 
 	public partial class AttributeContext : ParserRuleContext {
-		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(iro.IDENTIFIER, 0); }
 		public DefinitionContext definition() {
 			return GetRuleContext<DefinitionContext>(0);
 		}
@@ -349,10 +345,10 @@ public partial class iroParser : Parser {
 	}
 
 	public partial class Sys_setContext : ParserRuleContext {
-		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
-		public ITerminalNode SET_OPEN() { return GetToken(iroParser.SET_OPEN, 0); }
-		public ITerminalNode SET_CLOSE() { return GetToken(iroParser.SET_CLOSE, 0); }
-		public ITerminalNode ARRAY_SYM() { return GetToken(iroParser.ARRAY_SYM, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(iro.IDENTIFIER, 0); }
+		public ITerminalNode SET_OPEN() { return GetToken(iro.SET_OPEN, 0); }
+		public ITerminalNode SET_CLOSE() { return GetToken(iro.SET_CLOSE, 0); }
+		public ITerminalNode ARRAY_SYM() { return GetToken(iro.ARRAY_SYM, 0); }
 		public StatementContext[] statement() {
 			return GetRuleContexts<StatementContext>();
 		}
@@ -401,7 +397,7 @@ public partial class iroParser : Parser {
 			State = 52;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ARRAY_SYM) | (1L << COLON_SYM) | (1L << IDENTIFIER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << ARRAY_SYM) | (1L << COLON_SYM))) != 0)) {
 				{
 				{
 				State = 49; statement();
@@ -426,12 +422,12 @@ public partial class iroParser : Parser {
 	}
 
 	public partial class SetContext : ParserRuleContext {
-		public ITerminalNode COLON_SYM() { return GetToken(iroParser.COLON_SYM, 0); }
+		public ITerminalNode COLON_SYM() { return GetToken(iro.COLON_SYM, 0); }
 		public Typed_setContext typed_set() {
 			return GetRuleContext<Typed_setContext>(0);
 		}
-		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
-		public ITerminalNode ARRAY_SYM() { return GetToken(iroParser.ARRAY_SYM, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(iro.IDENTIFIER, 0); }
+		public ITerminalNode ARRAY_SYM() { return GetToken(iro.ARRAY_SYM, 0); }
 		public SetContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -494,9 +490,9 @@ public partial class iroParser : Parser {
 	}
 
 	public partial class Typed_setContext : ParserRuleContext {
-		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
-		public ITerminalNode SET_OPEN() { return GetToken(iroParser.SET_OPEN, 0); }
-		public ITerminalNode SET_CLOSE() { return GetToken(iroParser.SET_CLOSE, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(iro.IDENTIFIER, 0); }
+		public ITerminalNode SET_OPEN() { return GetToken(iro.SET_OPEN, 0); }
+		public ITerminalNode SET_CLOSE() { return GetToken(iro.SET_CLOSE, 0); }
 		public StatementContext[] statement() {
 			return GetRuleContexts<StatementContext>();
 		}
@@ -536,7 +532,7 @@ public partial class iroParser : Parser {
 			State = 71;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ARRAY_SYM) | (1L << COLON_SYM) | (1L << IDENTIFIER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << ARRAY_SYM) | (1L << COLON_SYM))) != 0)) {
 				{
 				{
 				State = 68; statement();
@@ -561,14 +557,14 @@ public partial class iroParser : Parser {
 	}
 
 	public partial class IncludeContext : ParserRuleContext {
-		public ITerminalNode COLON_SYM() { return GetToken(iroParser.COLON_SYM, 0); }
-		public ITerminalNode INCLUDE() { return GetToken(iroParser.INCLUDE, 0); }
-		public ITerminalNode[] QUOTE_SYM() { return GetTokens(iroParser.QUOTE_SYM); }
+		public ITerminalNode COLON_SYM() { return GetToken(iro.COLON_SYM, 0); }
+		public ITerminalNode INCLUDE() { return GetToken(iro.INCLUDE, 0); }
+		public ITerminalNode[] QUOTE_SYM() { return GetTokens(iro.QUOTE_SYM); }
 		public ITerminalNode QUOTE_SYM(int i) {
-			return GetToken(iroParser.QUOTE_SYM, i);
+			return GetToken(iro.QUOTE_SYM, i);
 		}
-		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
-		public ITerminalNode SEMICOLON_SYM() { return GetToken(iroParser.SEMICOLON_SYM, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(iro.IDENTIFIER, 0); }
+		public ITerminalNode SEMICOLON_SYM() { return GetToken(iro.SEMICOLON_SYM, 0); }
 		public IncludeContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -616,9 +612,9 @@ public partial class iroParser : Parser {
 	}
 
 	public partial class DefinitionContext : ParserRuleContext {
-		public ITerminalNode EQUALS_SYM() { return GetToken(iroParser.EQUALS_SYM, 0); }
-		public ITerminalNode REG_EQUALS_SYM() { return GetToken(iroParser.REG_EQUALS_SYM, 0); }
-		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
+		public ITerminalNode EQUALS_SYM() { return GetToken(iro.EQUALS_SYM, 0); }
+		public ITerminalNode REG_EQUALS_SYM() { return GetToken(iro.REG_EQUALS_SYM, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(iro.IDENTIFIER, 0); }
 		public RegexContext regex() {
 			return GetRuleContext<RegexContext>(0);
 		}
@@ -628,8 +624,8 @@ public partial class iroParser : Parser {
 		public ArrayContext array() {
 			return GetRuleContext<ArrayContext>(0);
 		}
-		public ITerminalNode ARRAY_SYM() { return GetToken(iroParser.ARRAY_SYM, 0); }
-		public ITerminalNode SEMICOLON_SYM() { return GetToken(iroParser.SEMICOLON_SYM, 0); }
+		public ITerminalNode ARRAY_SYM() { return GetToken(iro.ARRAY_SYM, 0); }
+		public ITerminalNode SEMICOLON_SYM() { return GetToken(iro.SEMICOLON_SYM, 0); }
 		public DefinitionContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -669,7 +665,7 @@ public partial class iroParser : Parser {
 
 			State = 86;
 			_la = _input.La(1);
-			if ( !(_la==REG_EQUALS_SYM || _la==EQUALS_SYM) ) {
+			if ( !(_la==EQUALS_SYM || _la==REG_EQUALS_SYM) ) {
 			_errHandler.RecoverInline(this);
 			} else {
 				if (_input.La(1) == TokenConstants.Eof) {
@@ -729,13 +725,13 @@ public partial class iroParser : Parser {
 	}
 
 	public partial class ArrayContext : ParserRuleContext {
-		public ITerminalNode[] IDENTIFIER() { return GetTokens(iroParser.IDENTIFIER); }
+		public ITerminalNode[] IDENTIFIER() { return GetTokens(iro.IDENTIFIER); }
 		public ITerminalNode IDENTIFIER(int i) {
-			return GetToken(iroParser.IDENTIFIER, i);
+			return GetToken(iro.IDENTIFIER, i);
 		}
-		public ITerminalNode[] COMMA_SYM() { return GetTokens(iroParser.COMMA_SYM); }
+		public ITerminalNode[] COMMA_SYM() { return GetTokens(iro.COMMA_SYM); }
 		public ITerminalNode COMMA_SYM(int i) {
-			return GetToken(iroParser.COMMA_SYM, i);
+			return GetToken(iro.COMMA_SYM, i);
 		}
 		public ArrayContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -800,7 +796,7 @@ public partial class iroParser : Parser {
 	}
 
 	public partial class RegexContext : ParserRuleContext {
-		public ITerminalNode REGEX() { return GetToken(iroParser.REGEX, 0); }
+		public ITerminalNode REGEX() { return GetToken(iro.REGEX, 0); }
 		public RegexContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -843,13 +839,13 @@ public partial class iroParser : Parser {
 	}
 
 	public partial class Constant_refContext : ParserRuleContext {
-		public ITerminalNode[] REF_SYM() { return GetTokens(iroParser.REF_SYM); }
+		public ITerminalNode[] REF_SYM() { return GetTokens(iro.REF_SYM); }
 		public ITerminalNode REF_SYM(int i) {
-			return GetToken(iroParser.REF_SYM, i);
+			return GetToken(iro.REF_SYM, i);
 		}
-		public ITerminalNode SET_OPEN() { return GetToken(iroParser.SET_OPEN, 0); }
-		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
-		public ITerminalNode SET_CLOSE() { return GetToken(iroParser.SET_CLOSE, 0); }
+		public ITerminalNode SET_OPEN() { return GetToken(iro.SET_OPEN, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(iro.IDENTIFIER, 0); }
+		public ITerminalNode SET_CLOSE() { return GetToken(iro.SET_CLOSE, 0); }
 		public Constant_refContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -896,7 +892,7 @@ public partial class iroParser : Parser {
 	}
 
 	public static readonly string _serializedATN =
-		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3\x16s\x4\x2\t\x2"+
+		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3\xFs\x4\x2\t\x2"+
 		"\x4\x3\t\x3\x4\x4\t\x4\x4\x5\t\x5\x4\x6\t\x6\x4\a\t\a\x4\b\t\b\x4\t\t"+
 		"\t\x4\n\t\n\x4\v\t\v\x4\f\t\f\x4\r\t\r\x3\x2\a\x2\x1C\n\x2\f\x2\xE\x2"+
 		"\x1F\v\x2\x3\x2\x3\x2\x3\x3\x3\x3\x5\x3%\n\x3\x3\x4\x3\x4\x3\x4\x5\x4"+
@@ -907,33 +903,33 @@ public partial class iroParser : Parser {
 		"^\n\n\x3\n\x5\n\x61\n\n\x3\v\x3\v\x6\v\x65\n\v\r\v\xE\v\x66\x3\v\x3\v"+
 		"\x3\f\x3\f\x3\r\x3\r\x3\r\x3\r\x3\r\x3\r\x3\r\x2\x2\x2\xE\x2\x2\x4\x2"+
 		"\x6\x2\b\x2\n\x2\f\x2\xE\x2\x10\x2\x12\x2\x14\x2\x16\x2\x18\x2\x2\x3\x3"+
-		"\x2\x5\x6u\x2\x1D\x3\x2\x2\x2\x4$\x3\x2\x2\x2\x6)\x3\x2\x2\x2\b+\x3\x2"+
-		"\x2\x2\n.\x3\x2\x2\x2\f<\x3\x2\x2\x2\xE\x44\x3\x2\x2\x2\x10N\x3\x2\x2"+
-		"\x2\x12V\x3\x2\x2\x2\x14\x64\x3\x2\x2\x2\x16j\x3\x2\x2\x2\x18l\x3\x2\x2"+
-		"\x2\x1A\x1C\x5\x4\x3\x2\x1B\x1A\x3\x2\x2\x2\x1C\x1F\x3\x2\x2\x2\x1D\x1B"+
-		"\x3\x2\x2\x2\x1D\x1E\x3\x2\x2\x2\x1E \x3\x2\x2\x2\x1F\x1D\x3\x2\x2\x2"+
-		" !\a\x2\x2\x3!\x3\x3\x2\x2\x2\"%\x5\x6\x4\x2#%\x5\n\x6\x2$\"\x3\x2\x2"+
-		"\x2$#\x3\x2\x2\x2%\x5\x3\x2\x2\x2&*\x5\b\x5\x2\'*\x5\f\a\x2(*\x5\x10\t"+
-		"\x2)&\x3\x2\x2\x2)\'\x3\x2\x2\x2)(\x3\x2\x2\x2*\a\x3\x2\x2\x2+,\a\x13"+
-		"\x2\x2,-\x5\x12\n\x2-\t\x3\x2\x2\x2.\x30\a\x13\x2\x2/\x31\a\a\x2\x2\x30"+
-		"/\x3\x2\x2\x2\x30\x31\x3\x2\x2\x2\x31\x32\x3\x2\x2\x2\x32\x36\a\v\x2\x2"+
-		"\x33\x35\x5\x6\x4\x2\x34\x33\x3\x2\x2\x2\x35\x38\x3\x2\x2\x2\x36\x34\x3"+
-		"\x2\x2\x2\x36\x37\x3\x2\x2\x2\x37\x39\x3\x2\x2\x2\x38\x36\x3\x2\x2\x2"+
-		"\x39:\a\f\x2\x2:\v\x3\x2\x2\x2;=\a\x13\x2\x2<;\x3\x2\x2\x2<=\x3\x2\x2"+
-		"\x2=?\x3\x2\x2\x2>@\a\a\x2\x2?>\x3\x2\x2\x2?@\x3\x2\x2\x2@\x41\x3\x2\x2"+
-		"\x2\x41\x42\a\r\x2\x2\x42\x43\x5\xE\b\x2\x43\r\x3\x2\x2\x2\x44\x45\a\x13"+
-		"\x2\x2\x45I\a\v\x2\x2\x46H\x5\x6\x4\x2G\x46\x3\x2\x2\x2HK\x3\x2\x2\x2"+
-		"IG\x3\x2\x2\x2IJ\x3\x2\x2\x2JL\x3\x2\x2\x2KI\x3\x2\x2\x2LM\a\f\x2\x2M"+
-		"\xF\x3\x2\x2\x2NO\a\r\x2\x2OP\a\x4\x2\x2PQ\a\xF\x2\x2QR\a\x13\x2\x2RS"+
-		"\a\xF\x2\x2ST\a\xE\x2\x2T\x11\x3\x2\x2\x2UW\a\a\x2\x2VU\x3\x2\x2\x2VW"+
-		"\x3\x2\x2\x2WX\x3\x2\x2\x2X]\t\x2\x2\x2Y^\a\x13\x2\x2Z^\x5\x16\f\x2[^"+
-		"\x5\x18\r\x2\\^\x5\x14\v\x2]Y\x3\x2\x2\x2]Z\x3\x2\x2\x2][\x3\x2\x2\x2"+
-		"]\\\x3\x2\x2\x2^`\x3\x2\x2\x2_\x61\a\xE\x2\x2`_\x3\x2\x2\x2`\x61\x3\x2"+
-		"\x2\x2\x61\x13\x3\x2\x2\x2\x62\x63\a\x13\x2\x2\x63\x65\a\b\x2\x2\x64\x62"+
-		"\x3\x2\x2\x2\x65\x66\x3\x2\x2\x2\x66\x64\x3\x2\x2\x2\x66g\x3\x2\x2\x2"+
-		"gh\x3\x2\x2\x2hi\a\x13\x2\x2i\x15\x3\x2\x2\x2jk\a\x3\x2\x2k\x17\x3\x2"+
-		"\x2\x2lm\a\x10\x2\x2mn\a\x10\x2\x2no\a\v\x2\x2op\a\x13\x2\x2pq\a\f\x2"+
-		"\x2q\x19\x3\x2\x2\x2\xE\x1D$)\x30\x36<?IV]`\x66";
+		"\x2\v\fu\x2\x1D\x3\x2\x2\x2\x4$\x3\x2\x2\x2\x6)\x3\x2\x2\x2\b+\x3\x2\x2"+
+		"\x2\n.\x3\x2\x2\x2\f<\x3\x2\x2\x2\xE\x44\x3\x2\x2\x2\x10N\x3\x2\x2\x2"+
+		"\x12V\x3\x2\x2\x2\x14\x64\x3\x2\x2\x2\x16j\x3\x2\x2\x2\x18l\x3\x2\x2\x2"+
+		"\x1A\x1C\x5\x4\x3\x2\x1B\x1A\x3\x2\x2\x2\x1C\x1F\x3\x2\x2\x2\x1D\x1B\x3"+
+		"\x2\x2\x2\x1D\x1E\x3\x2\x2\x2\x1E \x3\x2\x2\x2\x1F\x1D\x3\x2\x2\x2 !\a"+
+		"\x2\x2\x3!\x3\x3\x2\x2\x2\"%\x5\x6\x4\x2#%\x5\n\x6\x2$\"\x3\x2\x2\x2$"+
+		"#\x3\x2\x2\x2%\x5\x3\x2\x2\x2&*\x5\b\x5\x2\'*\x5\f\a\x2(*\x5\x10\t\x2"+
+		")&\x3\x2\x2\x2)\'\x3\x2\x2\x2)(\x3\x2\x2\x2*\a\x3\x2\x2\x2+,\a\x3\x2\x2"+
+		",-\x5\x12\n\x2-\t\x3\x2\x2\x2.\x30\a\x3\x2\x2/\x31\a\x4\x2\x2\x30/\x3"+
+		"\x2\x2\x2\x30\x31\x3\x2\x2\x2\x31\x32\x3\x2\x2\x2\x32\x36\a\x5\x2\x2\x33"+
+		"\x35\x5\x6\x4\x2\x34\x33\x3\x2\x2\x2\x35\x38\x3\x2\x2\x2\x36\x34\x3\x2"+
+		"\x2\x2\x36\x37\x3\x2\x2\x2\x37\x39\x3\x2\x2\x2\x38\x36\x3\x2\x2\x2\x39"+
+		":\a\x6\x2\x2:\v\x3\x2\x2\x2;=\a\x3\x2\x2<;\x3\x2\x2\x2<=\x3\x2\x2\x2="+
+		"?\x3\x2\x2\x2>@\a\x4\x2\x2?>\x3\x2\x2\x2?@\x3\x2\x2\x2@\x41\x3\x2\x2\x2"+
+		"\x41\x42\a\a\x2\x2\x42\x43\x5\xE\b\x2\x43\r\x3\x2\x2\x2\x44\x45\a\x3\x2"+
+		"\x2\x45I\a\x5\x2\x2\x46H\x5\x6\x4\x2G\x46\x3\x2\x2\x2HK\x3\x2\x2\x2IG"+
+		"\x3\x2\x2\x2IJ\x3\x2\x2\x2JL\x3\x2\x2\x2KI\x3\x2\x2\x2LM\a\x6\x2\x2M\xF"+
+		"\x3\x2\x2\x2NO\a\a\x2\x2OP\a\b\x2\x2PQ\a\t\x2\x2QR\a\x3\x2\x2RS\a\t\x2"+
+		"\x2ST\a\n\x2\x2T\x11\x3\x2\x2\x2UW\a\x4\x2\x2VU\x3\x2\x2\x2VW\x3\x2\x2"+
+		"\x2WX\x3\x2\x2\x2X]\t\x2\x2\x2Y^\a\x3\x2\x2Z^\x5\x16\f\x2[^\x5\x18\r\x2"+
+		"\\^\x5\x14\v\x2]Y\x3\x2\x2\x2]Z\x3\x2\x2\x2][\x3\x2\x2\x2]\\\x3\x2\x2"+
+		"\x2^`\x3\x2\x2\x2_\x61\a\n\x2\x2`_\x3\x2\x2\x2`\x61\x3\x2\x2\x2\x61\x13"+
+		"\x3\x2\x2\x2\x62\x63\a\x3\x2\x2\x63\x65\a\r\x2\x2\x64\x62\x3\x2\x2\x2"+
+		"\x65\x66\x3\x2\x2\x2\x66\x64\x3\x2\x2\x2\x66g\x3\x2\x2\x2gh\x3\x2\x2\x2"+
+		"hi\a\x3\x2\x2i\x15\x3\x2\x2\x2jk\a\xE\x2\x2k\x17\x3\x2\x2\x2lm\a\xF\x2"+
+		"\x2mn\a\xF\x2\x2no\a\x5\x2\x2op\a\x3\x2\x2pq\a\x6\x2\x2q\x19\x3\x2\x2"+
+		"\x2\xE\x1D$)\x30\x36<?IV]`\x66";
 	public static readonly ATN _ATN =
 		new ATNDeserializer().Deserialize(_serializedATN.ToCharArray());
 }

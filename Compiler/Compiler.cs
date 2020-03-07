@@ -2,14 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace iro4cli.Compiler
+namespace iro4cli.Compile
 {
     public static class Compiler
     {
+        //The variables currently being compiled.
+        public static Dictionary<string, IroVariable> Variables;
+
+        /// <summary>
+        /// Compiles a set of Algo variables given targets.
+        /// </summary>
         public static List<CompileResult> Compile(Dictionary<string, IroVariable> vars, params ICompileTarget[] targets)
         {
+            //Set locals for this compile.
+            Variables = vars;
             var pcd = new IroPrecompileData();
 
             //Verify that name, file extensions exist.
@@ -225,6 +234,13 @@ namespace iro4cli.Compiler
                             throw new NotImplementedException();
                     }
                 }
+
+                //Unrecognized.
+                else
+                {
+                    Error.Compile("Unrecognized statement inside an Iro context, must be a set or an include.");
+                    return null;
+                }
             }
 
             return iroCtx;
@@ -243,6 +259,7 @@ namespace iro4cli.Compiler
             }
 
             //Valid types?
+            string regex;
             if (value["styles"].Type != VariableType.Array)
             {
                 Error.Compile("Pattern 'styles' attribute must be an array.");
@@ -250,12 +267,30 @@ namespace iro4cli.Compiler
             }
             if (value["regex"].Type != VariableType.Regex)
             {
-                Error.Compile("Pattern 'regex' attribute must be a regex value.");
-                return null;
+                if (value["regex"].Type == VariableType.Reference)
+                {
+                    var constant = GetConstant(((IroReference)value["regex"]).Value, VariableType.Regex);
+                    if (constant is IroValue)
+                    {
+                        regex = ((IroValue)constant).Value;
+                    }
+                    else
+                    {
+                        regex = ((IroRegex)constant).StringValue;
+                    }
+                }
+                else
+                {
+                    Error.Compile("Pattern 'regex' attribute must be a regex value.");
+                    return null;
+                }
+            }
+            else
+            {
+                regex = ((IroRegex)value["regex"]).StringValue;
             }
 
             //Get them out.
-            string regex = ((IroRegex)value["regex"]).StringValue;
             List<string> styles = new List<string>();
             foreach (var style in ((IroList)value["styles"]))
             {
@@ -302,10 +337,28 @@ namespace iro4cli.Compiler
             }
 
             //Verify their types.
+            string regex;
             if (!(ilp["regex"] is IroRegex))
             {
-                Error.Compile("Inline push attribute 'regex' must be a regex value.");
-                return null;
+                //Is it a constant yet to be converted?
+                if ((ilp["regex"] is IroReference))
+                {
+                    //Attempt to get the constant.
+                    IroVariable constant = GetConstant(((IroReference)ilp["regex"]).Value, VariableType.Regex);
+                    if (constant is IroRegex)
+                    {
+                        regex = ((IroRegex)constant).StringValue;
+                    }
+                    else
+                    {
+                        regex = ((IroValue)constant).Value;
+                    }
+                }
+                else
+                {
+                    Error.Compile("Inline push attribute 'regex' must be a regex value.");
+                    return null;
+                }
             }
             if (!(ilp["styles"] is IroList))
             {
@@ -324,7 +377,7 @@ namespace iro4cli.Compiler
             }
 
             //Get out the regex and style values.
-            string regex = ((IroRegex)ilp["regex"]).StringValue;
+            regex = ((IroRegex)ilp["regex"]).StringValue;
             List<string> styles = new List<string>();
             foreach (var style in ((IroList)ilp["styles"]))
             {
@@ -346,18 +399,39 @@ namespace iro4cli.Compiler
             {
                 //Parse the 'pop'.
                 var pop = ((IroSet)ilp["pop"]);
-                if (!pop.ContainsKey("regex") || pop["regex"].Type != VariableType.Regex)
+                if (!pop.ContainsKey("regex"))
                 {
-                    Error.Compile("Inline push 'pop' messages must be of type 'set'.");
+                    Error.Compile("Inline push 'pop' messages must contain a 'regex' property.");
                     return null;
+                }
+                if (!(pop["regex"] is IroValue) && !(pop["regex"] is IroRegex))
+                {
+                    Error.Compile("Inline push 'pop' messages must contain a 'regex' property of type 'regex'.");
                 }
                 if (!pop.ContainsKey("styles") || pop["styles"].Type != VariableType.Array)
                 {
-                    Error.Compile("Inline push 'styles' attribute must be of type 'array'.");
+                    Error.Compile("Inline push 'pop' messages must have a 'styles' attribute of type 'array'.");
+                    return null;
                 }
 
-                //regex
-                popRegex = ((IroRegex)pop["regex"]).StringValue;
+                //get regex
+                if (pop["regex"] is IroReference)
+                {
+                    //It's a constant, uh oh. Get it.
+                    var const_ = GetConstant(((IroReference)pop["regex"]).Value, VariableType.Regex);
+                    if (const_ is IroRegex)
+                    {
+                        popRegex = ((IroRegex)const_).StringValue;
+                    }
+                    else
+                    {
+                        popRegex = ((IroValue)const_).Value;
+                    }
+                }
+                else
+                {
+                    popRegex = ((IroRegex)pop["regex"]).StringValue;
+                }
 
                 //styles
                 foreach (var style in ((IroList)ilp["styles"]))
@@ -388,6 +462,37 @@ namespace iro4cli.Compiler
                 PopStyles = popStyles,
                 Type = ContextType.InlinePush
             };
+        }
+
+        /// <summary>
+        /// Attempts to get a constant value from the currently executing compile's variables.
+        /// </summary>
+        private static IroVariable GetConstant(string value, VariableType type)
+        {
+            //Check if the constant exists.
+            if (!Variables.ContainsKey(value))
+            {
+                //No constant found.
+                Error.Compile("Referenced constant '" + value + "' is not defined.");
+                return null;
+            }
+
+            //Right type for a constant?
+            if (Variables[value].Type != VariableType.Value && Variables[value].Type != VariableType.Regex)
+            {
+                Error.Compile("Value '" + value + "' refenced like a constant, but it is not a value or a regex.");
+                return null;
+            }
+
+            //Is the variable of the right type?
+            if (Variables[value].Type != type)
+            {
+                Error.Compile("Constant value '" + value + "' is not of the expected type '" + type.ToString() + "'.");
+                return null;
+            }
+
+            //Return it.
+            return Variables[value];
         }
     }
 }
