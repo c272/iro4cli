@@ -15,6 +15,7 @@ namespace iro4cli
         public bool Bold = false;
         public bool Italic;
         public string Colour = null;
+        public string BackgroundColour = null;
 
         //Scopes for various text grammar formats.
         public string HighlightJSScope = null;

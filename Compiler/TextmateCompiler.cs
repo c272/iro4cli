@@ -57,6 +57,10 @@ namespace iro4cli.Compile
             text.AppendLine("</dict>");
             text.AppendLine("</array>");
 
+            //Name of the source.
+            text.AppendLine("<key>scopeName</key>");
+            text.AppendLine("<string>source." + data.UUID + "</string>");
+
             //todo
             return null;
         }
