@@ -24,10 +24,26 @@ namespace iro4cli
         /// </summary>
         public bool HasType() { return SetType == null; }
 
+        /// <summary>
+        /// Checks whether this set contains sets of a given type.
+        /// </summary>
+        public bool ContainsSetOfType(string type)
+        {
+            return (Values.FirstOrDefault(x => x.Type == VariableType.Set && ((IroSet)x).SetType == type) != null);
+        }
+
+        /// <summary>
+        /// Returns the first set of a given type.
+        /// </summary>
+        public IroSet GetFirstSetOfType(string type)
+        {
+            return (IroSet)Values.FirstOrDefault(x => x.Type == VariableType.Set && ((IroSet)x).SetType == type);
+        }
+
         /////////////////////////////////
         /// DICTIONARY HELPER METHODS ///
         /////////////////////////////////
-        
+
         public Dictionary<string, IroVariable> Variables = new Dictionary<string, IroVariable>();
 
         public IroVariable this[string key] { get => ((IDictionary<string, IroVariable>)Variables)[key]; set => ((IDictionary<string, IroVariable>)Variables)[key] = value; }

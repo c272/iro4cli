@@ -58,7 +58,7 @@ namespace iro4cli
                         name = childSet.IDENTIFIER().GetText();
                     }
 
-                    value = VisitSet(childSet);
+                    value = ((IroAttribute)VisitSet(childSet)).Value;
                 }
 
                 //Include?
@@ -136,6 +136,8 @@ namespace iro4cli
                         Error.Fatal(context, "A variable already exists in this set with name '" + resultAttrib.Name + "'.");
                         return null;
                     }
+
+                    set.Add(resultAttrib.Name, resultAttrib.Value);
                 }
 
                 //An include?

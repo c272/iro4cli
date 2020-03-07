@@ -91,6 +91,9 @@
   <ItemGroup>
     <Compile Include="Visitors\AttributeVisitor.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Visitors\IncludeVisitor.cs" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

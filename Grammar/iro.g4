@@ -50,12 +50,13 @@ constant_ref: REF_SYM REF_SYM SET_OPEN IDENTIFIER SET_CLOSE;
  */
 
 //Regular expression.
-REGEX: L_BRACKET (~[()]+ | REGEX) R_BRACKET;
+REGEX: L_BRACKET (~[()]+ | ESCAPED_BRACKET | REGEX) R_BRACKET;
 
 //Reserved words.
 INCLUDE: 'include';
 
 //Operators & symbols.
+ESCAPED_BRACKET: '\\(' | '\\)';
 REG_EQUALS_SYM: '\\=';
 EQUALS_SYM: '=';
 ARRAY_SYM: '[]';

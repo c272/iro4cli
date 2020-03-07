@@ -205,8 +205,10 @@ namespace iro4cli.Compile
             var iroCtx = new IroContext(contextName);
 
             //Loop over the values in the context, process depending on type.
-            foreach (var value in context.Values)
+            foreach (var kvp in context)
             {
+                var value = kvp.Value;
+
                 //An include.
                 if (value is IroInclude)
                 {
@@ -215,6 +217,61 @@ namespace iro4cli.Compile
                         Data = ((IroInclude)value).Value,
                         Type = ContextType.Include
                     });
+                }
+
+                //A descriptive value for a set.
+                if (value is IroValue)
+                {
+                    var valueType = (IroValue)value;
+                    switch (kvp.Key)
+                    {
+                        case "description":
+                            iroCtx.Members.Add(new ContextMember()
+                            {
+                                Data = valueType.Value,
+                                Type = ContextType.Description
+                            });
+                            break;
+                        case "case_sensitive":
+                            iroCtx.Members.Add(new ContextMember()
+                            {
+                                Data = valueType.Value,
+                                Type = ContextType.CaseSensitive
+                            });
+                            break;
+                        case "default_style":
+                            iroCtx.Members.Add(new ContextMember()
+                            {
+                                Data = valueType.Value,
+                                Type = ContextType.DefaultStyle
+                            });
+                            break;
+                        case "enabled":
+                            iroCtx.Members.Add(new ContextMember()
+                            {
+                                Data = valueType.Value,
+                                Type = ContextType.Enabled
+                            });
+                            break;
+                        case "space_unimportant":
+                            iroCtx.Members.Add(new ContextMember()
+                            {
+                                Data = valueType.Value,
+                                Type = ContextType.SpaceUnimportant
+                            });
+                            break;
+                        case "uid":
+                            iroCtx.Members.Add(new ContextMember()
+                            {
+                                Data = valueType.Value,
+                                Type = ContextType.UID
+                            });
+                            break;
+                        default:
+                            Error.CompileWarning("Unrecognized property in context, must be one of:");
+                            Error.CompileWarning("description, case_sensitive, default_style, enabled, space_unimportant, uid");
+                            break;
+                    }
                 }
 
                 //A set of a given type.
@@ -325,12 +382,12 @@ namespace iro4cli.Compile
                 Error.Compile("Required attribute is missing from inline push (must have members 'regex', 'styles').");
                 return null;
             }
-            if (!ilp.ContainsKey("pop") && !ilp.ContainsKey("eol_pop"))
+            if (!ilp.ContainsSetOfType("pop") && !ilp.ContainsSetOfType("eol_pop"))
             {
-                Error.Compile("Inline push patterns must have a 'pop' or 'eol_pop' set to know when to end the state..");
+                Error.Compile("Inline push patterns must have a 'pop' or 'eol_pop' set to know when to end the state.");
                 return null;
             }
-            if (ilp.ContainsKey("pop") && ilp.ContainsKey("eol_pop"))
+            if (ilp.ContainsSetOfType("pop") && ilp.ContainsSetOfType("eol_pop"))
             {
                 Error.Compile("Inline push patterns cannot hav both a 'pop' and an 'eol_pop', you must use one or the other.");
                 return null;
@@ -365,12 +422,12 @@ namespace iro4cli.Compile
                 Error.Compile("Inline push attribute 'styles' must be an array value.");
                 return null;
             }
-            if (ilp.ContainsKey("pop") && !(ilp["pop"] is IroSet))
+            if (ilp.ContainsSetOfType("pop") && !(ilp.GetFirstSetOfType("pop") is IroSet))
             {
                 Error.Compile("Pop attributes must be a set.");
                 return null;
             }
-            if (ilp.ContainsKey("eol_pop") && !(ilp["eol_pop"] is IroSet))
+            if (ilp.ContainsSetOfType("eol_pop") && !(ilp.GetFirstSetOfType("eol_pop") is IroSet))
             {
                 Error.Compile("End of line pop attributes must be a set.");
                 return null;
@@ -395,10 +452,10 @@ namespace iro4cli.Compile
             //Generate the pop (if it's there).
             List<string> popStyles = new List<string>();
             string popRegex;
-            if (ilp.ContainsKey("pop"))
+            if (ilp.ContainsSetOfType("pop"))
             {
                 //Parse the 'pop'.
-                var pop = ((IroSet)ilp["pop"]);
+                var pop = ilp.GetFirstSetOfType("pop");
                 if (!pop.ContainsKey("regex"))
                 {
                     Error.Compile("Inline push 'pop' messages must contain a 'regex' property.");
