@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace iro4cli.Compile
 {
@@ -88,9 +89,19 @@ namespace iro4cli.Compile
                         Members = queued.Value
                     }, data);
                 }
+                pendingContexts = new Dictionary<string, List<ContextMember>>();
             }
 
-            return null;
+            //Close the textmate scopes.
+            text.AppendLine("</dict>");
+            text.AppendLine("</dict>");
+            text.AppendLine("</plist>");
+
+            return new CompileResult()
+            {
+                GeneratedFile = FormatXml(text.ToString()),
+                Target = Target.Textmate
+            };
         }
 
         /// <summary>
@@ -108,7 +119,7 @@ namespace iro4cli.Compile
             {
                 AddPattern(ref text, pattern, data);
             }
-
+            text.AppendLine("</array>");
             text.AppendLine("</dict>");
         }
 
@@ -137,7 +148,7 @@ namespace iro4cli.Compile
                 case ContextMemberType.Pop:
                     throw new NotImplementedException();
                 default:
-                    Error.Compile("Failed to add pattern, unrecognized context member type '" + pattern.Type.ToString() + "'.");
+                    Error.CompileWarning("Failed to add pattern, unrecognized context member type '" + pattern.Type.ToString() + "'.");
                     return;
             }
         }
@@ -148,7 +159,8 @@ namespace iro4cli.Compile
         private void AddInlinePush(ref StringBuilder text, InlinePushContextMember pattern, IroPrecompileData data)
         {
             //Get styles from the pattern.
-            var styles = GetPatternStyles(pattern, data);
+            var styles = GetPatternStyles(pattern.Styles, data);
+            text.AppendLine("<dict>");
 
             //Patterns match up with context groups?
             if (!GroupsMatch(styles, pattern.Data))
@@ -179,17 +191,46 @@ namespace iro4cli.Compile
             text.AppendLine("<array>");
 
             //Include the queued context.
-            string helperName = "helper_" + ShortId.Generate(7);
-            text.AppendLine("<dict>");
-            text.AppendLine("<key>include</key>");
-            text.AppendLine("<string>#" + helperName + "</string>");
-            text.AppendLine("</dict>");
+            if (pattern.Patterns.Count != 0)
+            {
+                string helperName = "helper_" + ShortId.Generate(7);
+                text.AppendLine("<dict>");
+                text.AppendLine("<key>include</key>");
+                text.AppendLine("<string>#" + helperName + "</string>");
+                text.AppendLine("</dict>");
+                
+                //Queue it.
+                QueueContext(helperName, pattern.Patterns);
+            }
             text.AppendLine("</array>");
 
-            //Queue it.
-            QueueContext(helperName, pattern.Patterns);
+            //Patterns done, pop condition & styles.
+            var popStyles = GetPatternStyles(pattern.PopStyles, data);
 
-            //...
+            //Patterns match up with context groups?
+            if (!GroupsMatch(popStyles, pattern.PopData))
+            {
+                Error.Compile("Mismatch between capture groups and number of styles for pop with regex '" + pattern.PopData + "'.");
+                return;
+            }
+
+            //Okay, add pop data.
+            text.AppendLine("<key>end</key>");
+            text.AppendLine("<string>" + pattern.PopData + "</string>");
+            text.AppendLine("<key>endCaptures</key>");
+            text.AppendLine("<dict>");
+            for (int i = 0; i < popStyles.Count; i++)
+            {
+                text.AppendLine("<key>" + (i + 1) + "</key>");
+                text.AppendLine("<dict>");
+                text.AppendLine("<key>name</key>");
+                text.AppendLine("<string>" + popStyles[i].TextmateScope + "." + data.Name + "</string>");
+                text.AppendLine("</dict>");
+            }
+            text.AppendLine("</dict>");
+
+            //Close the inline push.
+            text.AppendLine("</dict>");
         }
 
         /// <summary>
@@ -206,7 +247,7 @@ namespace iro4cli.Compile
         private void AddPatternRaw(ref StringBuilder text, PatternContextMember pattern, IroPrecompileData data)
         {
             //Get styles from the pattern.
-            var styles = GetPatternStyles(pattern, data);
+            var styles = GetPatternStyles(pattern.Styles, data);
 
             //Is the amount of patterns equal to the amount of context groups?
             //Use a hack of replacing bracket groups with normal letters.
@@ -240,31 +281,31 @@ namespace iro4cli.Compile
                     text.AppendLine("<string>" + styles[i].TextmateScope + "." + data.Name + "</string>");
                     text.AppendLine("</dict>");
                 }
-                text.AppendLine("</dict>");
             }
+            text.AppendLine("</dict>");
         }
 
         /// <summary>
         /// Gets a list of styles for a specific pattern context member.
         /// </summary>
-        private List<IroStyle> GetPatternStyles(PatternContextMember pattern, IroPrecompileData data)
+        private List<IroStyle> GetPatternStyles(List<string> styleNames, IroPrecompileData data)
         {
             //Check that styles exist, and try to get the first one out.
-            if (pattern.Styles.Count == 0)
+            if (styleNames.Count == 0)
             {
-                Error.Compile("No style was defined for pattern with regex '" + pattern.Data + "'.");
+                Error.Compile("No style was defined for a pattern. All styles must have patterns.");
                 return null;
             }
 
             //Get all the patterns out.
             var styles = new List<IroStyle>();
-            foreach (var style in pattern.Styles)
+            foreach (var style in styleNames)
             {
                 //Get the styles form the style list.
                 int index = data.Styles.FindIndex(x => x.Name == style);
                 if (index == -1)
                 {
-                    Error.Compile("A style '" + style + "' is referenced in pattern with regex '" + pattern.Data + "', but it is not defined in the style map.");
+                    Error.Compile("A style '" + style + "' is referenced in a pattern, but it is not defined in the style map.");
                     return null;
                 }
 
@@ -274,7 +315,7 @@ namespace iro4cli.Compile
             //Make sure all the patterns have textmate scopes.
             if (styles.Where(x => x.TextmateScope != null).Count() != styles.Count)
             {
-                Error.Compile("One or more styles for pattern with regex '" + pattern.Data + "' does not have a textmate scope defined.");
+                Error.Compile("One or more styles for a pattern does not have a textmate scope defined.");
                 return null;
             }
 
@@ -289,6 +330,24 @@ namespace iro4cli.Compile
             string withoutGroups = Regex.Replace(data, "\\(([^()]+)\\)", "x");
             int groupAmt = withoutGroups.Split('|').Length;
             return (groupAmt == styles.Count);
+        }
+
+        /// <summary>
+        /// Formats a given string into pretty print XML.
+        /// </summary>
+        private string FormatXml(string xml)
+        {
+            try
+            {
+                XDocument doc = XDocument.Parse(xml);
+                return doc.ToString();
+            }
+            catch (Exception e)
+            {
+                //Failed, just return normal XML.
+                Error.Compile("Failed to generate valid Textmate file: '" + e.Message + "'.");
+                return null;
+            }
         }
     }
 }
