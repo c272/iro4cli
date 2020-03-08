@@ -8,7 +8,7 @@
     <ProjectGuid>{BE5104B5-CEF4-4F06-A091-059E6F44A92D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>iro4cli</RootNamespace>
-    <AssemblyName>iro4cli</AssemblyName>
+    <AssemblyName>iro</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
