@@ -263,54 +263,10 @@ namespace iro4cli.Compile
                 else if (value is IroValue)
                 {
                     var valueType = (IroValue)value;
-                    switch (kvp.Key)
+                    var ctxVal = AddContextValue(valueType.Value, kvp.Key);
+                    if (ctxVal != null)
                     {
-                        case "description":
-                            iroCtx.Members.Add(new ContextMember()
-                            {
-                                Data = valueType.Value,
-                                Type = ContextMemberType.Description
-                            });
-                            break;
-                        case "case_sensitive":
-                            iroCtx.Members.Add(new ContextMember()
-                            {
-                                Data = valueType.Value,
-                                Type = ContextMemberType.CaseSensitive
-                            });
-                            break;
-                        case "default_style":
-                            iroCtx.Members.Add(new ContextMember()
-                            {
-                                Data = valueType.Value,
-                                Type = ContextMemberType.DefaultStyle
-                            });
-                            break;
-                        case "enabled":
-                            iroCtx.Members.Add(new ContextMember()
-                            {
-                                Data = valueType.Value,
-                                Type = ContextMemberType.Enabled
-                            });
-                            break;
-                        case "space_unimportant":
-                            iroCtx.Members.Add(new ContextMember()
-                            {
-                                Data = valueType.Value,
-                                Type = ContextMemberType.SpaceUnimportant
-                            });
-                            break;
-                        case "uid":
-                            iroCtx.Members.Add(new ContextMember()
-                            {
-                                Data = valueType.Value,
-                                Type = ContextMemberType.UID
-                            });
-                            break;
-                        default:
-                            Error.CompileWarning("Unrecognized property '" + kvp.Key + "' in context, must be one of:");
-                            Error.CompileWarning("description, case_sensitive, default_style, enabled, space_unimportant, uid");
-                            break;
+                        iroCtx.Members.Add(ctxVal);
                     }
                 }
 
@@ -341,6 +297,56 @@ namespace iro4cli.Compile
             }
 
             return iroCtx;
+        }
+
+        /// <summary>
+        /// A single context value to be added to the context list.
+        /// </summary>
+        private static ContextMember AddContextValue(string value, string name)
+        {
+            switch (name)
+            {
+                case "description":
+                    return new ContextMember()
+                    {
+                        Data = value,
+                        Type = ContextMemberType.Description
+                    };
+                case "case_sensitive":
+                    return new ContextMember()
+                    {
+                        Data = value,
+                        Type = ContextMemberType.CaseSensitive
+                    };
+                case "default_style":
+                    return new ContextMember()
+                    {
+                        Data = value,
+                        Type = ContextMemberType.DefaultStyle
+                    };
+                case "enabled":
+                    return new ContextMember()
+                    {
+                        Data = value,
+                        Type = ContextMemberType.Enabled
+                    };
+                case "space_unimportant":
+                    return new ContextMember()
+                    {
+                        Data = value,
+                        Type = ContextMemberType.SpaceUnimportant
+                    };
+                case "uid":
+                    return new ContextMember()
+                    {
+                        Data = value,
+                        Type = ContextMemberType.UID
+                    };
+                default:
+                    Error.CompileWarning("Unrecognized property '" + name + "' in context, must be one of:");
+                    Error.CompileWarning("description, case_sensitive, default_style, enabled, space_unimportant, uid");
+                    return null;
+            }
         }
 
         /// <summary>
@@ -559,6 +565,8 @@ namespace iro4cli.Compile
                               .Select(x => x.Value)
                               .Cast<IroValue>();
 
+            var values = ilp.Where(x => x.Value.Type == VariableType.Value);
+
             var ctxMems = new List<ContextMember>();
 
             //Parse them into the context list.
@@ -573,6 +581,16 @@ namespace iro4cli.Compile
                     Data = include.Value,
                     Type = ContextMemberType.Include
                 });
+            }
+            foreach (var value in values)
+            {
+                //Ignore the horrible spaghetti, first parameter is getting out the string value from the KeyValuePair.
+                //Second is getting out the name.
+                var ctxVal = AddContextValue(((IroValue)value.Value).Value, value.Key);
+                if (ctxVal != null)
+                {
+                    ctxMems.Add(ctxVal);
+                }
             }
 
             //Create the module and return it.
