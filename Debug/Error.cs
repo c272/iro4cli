@@ -55,5 +55,25 @@ namespace iro4cli
             Console.WriteLine("[WARN] Line " + ctx.Start.Line + " - " + msg);
             Console.ResetColor();
         }
+
+        /// <summary>
+        /// Logs an error to the command line and exits.
+        /// </summary>
+        public static void CommandLine(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("[ERR] Command Line - " + msg);
+            Console.ResetColor();
+        }
+
+        /// <summary>
+        /// Issues a warning for the command line.
+        /// </summary>
+        public static void CommandLineWarning(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("[WARN] Command Line - " + msg);
+            Console.ResetColor();
+        }
     }
 }
