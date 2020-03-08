@@ -192,23 +192,48 @@ namespace iro4cli.Compile
             }
             text.AppendLine("</dict>");
 
-            //Begin patterns, capture all "pattern" sets and includes and queue them.
-            text.AppendLine("<key>patterns</key>");
-            text.AppendLine("<array>");
-
-            //Include the queued context.
-            if (pattern.Patterns.Count != 0)
+            //Is a default style assigned?
+            int defaultStyleIndex = pattern.Patterns.FindIndex(x => x.Type == ContextMemberType.DefaultStyle);
+            if (defaultStyleIndex != -1)
             {
-                string helperName = "helper_" + ShortId.Generate(7);
-                text.AppendLine("<dict>");
-                text.AppendLine("<key>include</key>");
-                text.AppendLine("<string>#" + helperName + "</string>");
-                text.AppendLine("</dict>");
-                
-                //Queue it.
-                QueueContext(helperName, pattern.Patterns);
+                //Are other patterns defined?
+                if (pattern.Patterns.FindIndex(x => x.Type == ContextMemberType.Pattern) != -1)
+                {
+                    //Warn the user.
+                    Error.CompileWarning("You cannot define unique patterns when a 'default_style' attribute is applied. Ignoring them.");
+                }
+
+                //Get the style out.
+                var style = GetPatternStyles(new List<string>()
+                {
+                    pattern.Patterns[defaultStyleIndex].Data
+                }, data);
+
+                //Add default content name.
+                text.AppendLine("<key>contentName</key>");
+                text.AppendLine("<string>" + style[0].TextmateScope + "." + data.Name + "</string>");
             }
-            text.AppendLine("</array>");
+            else
+            {
+                //Actual patterns defined, not just default.
+                //Begin patterns, capture all "pattern" sets and includes and queue them.
+                text.AppendLine("<key>patterns</key>");
+                text.AppendLine("<array>");
+
+                //Include the queued context.
+                if (pattern.Patterns.Count != 0)
+                {
+                    string helperName = "helper_" + ShortId.Generate(7);
+                    text.AppendLine("<dict>");
+                    text.AppendLine("<key>include</key>");
+                    text.AppendLine("<string>#" + helperName + "</string>");
+                    text.AppendLine("</dict>");
+
+                    //Queue it.
+                    QueueContext(helperName, pattern.Patterns);
+                }
+                text.AppendLine("</array>");
+            }
 
             //Patterns done, pop condition & styles.
             var popStyles = GetPatternStyles(pattern.PopStyles, data);
