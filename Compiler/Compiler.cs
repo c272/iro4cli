@@ -547,7 +547,7 @@ namespace iro4cli.Compile
             {
                 //eol_pop
                 popStyles = styles;
-                popRegex = "(\n|\r\n)";
+                popRegex = "(\\n|\\r\\n)";
             }
 
             //Get all patterns and includes out.

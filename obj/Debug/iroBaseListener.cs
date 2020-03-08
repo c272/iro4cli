@@ -154,6 +154,19 @@ public partial class iroBaseListener : IiroListener {
 	public virtual void ExitDefinition([NotNull] iroParser.DefinitionContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="iroParser.definition_ident"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterDefinition_ident([NotNull] iroParser.Definition_identContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="iroParser.definition_ident"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitDefinition_ident([NotNull] iroParser.Definition_identContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="iroParser.array"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

@@ -39,10 +39,11 @@ public partial class iroParser : Parser {
 	public const int
 		RULE_compileUnit = 0, RULE_block = 1, RULE_statement = 2, RULE_attribute = 3, 
 		RULE_sys_set = 4, RULE_set = 5, RULE_typed_set = 6, RULE_include = 7, 
-		RULE_definition = 8, RULE_array = 9, RULE_regex = 10, RULE_constant_ref = 11;
+		RULE_definition = 8, RULE_definition_ident = 9, RULE_array = 10, RULE_regex = 11, 
+		RULE_constant_ref = 12;
 	public static readonly string[] ruleNames = {
 		"compileUnit", "block", "statement", "attribute", "sys_set", "set", "typed_set", 
-		"include", "definition", "array", "regex", "constant_ref"
+		"include", "definition", "definition_ident", "array", "regex", "constant_ref"
 	};
 
 	private static readonly string[] _LiteralNames = {
@@ -141,20 +142,20 @@ public partial class iroParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 27;
+			State = 29;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ARRAY_SYM) | (1L << COLON_SYM) | (1L << IDENTIFIER))) != 0)) {
 				{
 				{
-				State = 24; block();
+				State = 26; block();
 				}
 				}
-				State = 29;
+				State = 31;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			}
-			State = 30; Match(Eof);
+			State = 32; Match(Eof);
 			}
 		}
 		catch (RecognitionException re) {
@@ -202,18 +203,18 @@ public partial class iroParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 34;
+			State = 36;
 			_errHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				{
-				State = 32; statement();
+				State = 34; statement();
 				}
 				break;
 
 			case 2:
 				{
-				State = 33; sys_set();
+				State = 35; sys_set();
 				}
 				break;
 			}
@@ -267,24 +268,24 @@ public partial class iroParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 39;
+			State = 41;
 			_errHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(_input,2,_ctx) ) {
 			case 1:
 				{
-				State = 36; attribute();
+				State = 38; attribute();
 				}
 				break;
 
 			case 2:
 				{
-				State = 37; set();
+				State = 39; set();
 				}
 				break;
 
 			case 3:
 				{
-				State = 38; include();
+				State = 40; include();
 				}
 				break;
 			}
@@ -333,8 +334,8 @@ public partial class iroParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 41; Match(IDENTIFIER);
-			State = 42; definition();
+			State = 43; Match(IDENTIFIER);
+			State = 44; definition();
 			}
 		}
 		catch (RecognitionException re) {
@@ -387,31 +388,31 @@ public partial class iroParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 44; Match(IDENTIFIER);
-			State = 46;
+			State = 46; Match(IDENTIFIER);
+			State = 48;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			if (_la==ARRAY_SYM) {
 				{
-				State = 45; Match(ARRAY_SYM);
+				State = 47; Match(ARRAY_SYM);
 				}
 			}
 
-			State = 48; Match(SET_OPEN);
-			State = 52;
+			State = 50; Match(SET_OPEN);
+			State = 54;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ARRAY_SYM) | (1L << COLON_SYM) | (1L << IDENTIFIER))) != 0)) {
 				{
 				{
-				State = 49; statement();
+				State = 51; statement();
 				}
 				}
-				State = 54;
+				State = 56;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			}
-			State = 55; Match(SET_CLOSE);
+			State = 57; Match(SET_CLOSE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -460,26 +461,26 @@ public partial class iroParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 58;
+			State = 60;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			if (_la==IDENTIFIER) {
 				{
-				State = 57; Match(IDENTIFIER);
+				State = 59; Match(IDENTIFIER);
 				}
 			}
 
-			State = 61;
+			State = 63;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			if (_la==ARRAY_SYM) {
 				{
-				State = 60; Match(ARRAY_SYM);
+				State = 62; Match(ARRAY_SYM);
 				}
 			}
 
-			State = 63; Match(COLON_SYM);
-			State = 64; typed_set();
+			State = 65; Match(COLON_SYM);
+			State = 66; typed_set();
 			}
 		}
 		catch (RecognitionException re) {
@@ -497,6 +498,7 @@ public partial class iroParser : Parser {
 		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
 		public ITerminalNode SET_OPEN() { return GetToken(iroParser.SET_OPEN, 0); }
 		public ITerminalNode SET_CLOSE() { return GetToken(iroParser.SET_CLOSE, 0); }
+		public ITerminalNode SEMICOLON_SYM() { return GetToken(iroParser.SEMICOLON_SYM, 0); }
 		public StatementContext[] statement() {
 			return GetRuleContexts<StatementContext>();
 		}
@@ -531,22 +533,52 @@ public partial class iroParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 66; Match(IDENTIFIER);
-			State = 67; Match(SET_OPEN);
-			State = 71;
+			State = 68; Match(IDENTIFIER);
+			State = 84;
 			_errHandler.Sync(this);
-			_la = _input.La(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ARRAY_SYM) | (1L << COLON_SYM) | (1L << IDENTIFIER))) != 0)) {
+			switch (_input.La(1)) {
+			case SET_OPEN:
 				{
-				{
-				State = 68; statement();
-				}
-				}
+				State = 69; Match(SET_OPEN);
 				State = 73;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ARRAY_SYM) | (1L << COLON_SYM) | (1L << IDENTIFIER))) != 0)) {
+					{
+					{
+					State = 70; statement();
+					}
+					}
+					State = 75;
+					_errHandler.Sync(this);
+					_la = _input.La(1);
+				}
+				State = 76; Match(SET_CLOSE);
+				}
+				break;
+			case ARRAY_SYM:
+			case COLON_SYM:
+			case IDENTIFIER:
+				{
+				State = 78;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+				do {
+					{
+					{
+					State = 77; statement();
+					}
+					}
+					State = 80;
+					_errHandler.Sync(this);
+					_la = _input.La(1);
+				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ARRAY_SYM) | (1L << COLON_SYM) | (1L << IDENTIFIER))) != 0) );
+				State = 82; Match(SEMICOLON_SYM);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
-			State = 74; Match(SET_CLOSE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -596,12 +628,12 @@ public partial class iroParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 76; Match(COLON_SYM);
-			State = 77; Match(INCLUDE);
-			State = 78; Match(QUOTE_SYM);
-			State = 79; Match(IDENTIFIER);
-			State = 80; Match(QUOTE_SYM);
-			State = 81; Match(SEMICOLON_SYM);
+			State = 86; Match(COLON_SYM);
+			State = 87; Match(INCLUDE);
+			State = 88; Match(QUOTE_SYM);
+			State = 89; Match(IDENTIFIER);
+			State = 90; Match(QUOTE_SYM);
+			State = 91; Match(SEMICOLON_SYM);
 			}
 		}
 		catch (RecognitionException re) {
@@ -618,7 +650,9 @@ public partial class iroParser : Parser {
 	public partial class DefinitionContext : ParserRuleContext {
 		public ITerminalNode EQUALS_SYM() { return GetToken(iroParser.EQUALS_SYM, 0); }
 		public ITerminalNode REG_EQUALS_SYM() { return GetToken(iroParser.REG_EQUALS_SYM, 0); }
-		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
+		public Definition_identContext definition_ident() {
+			return GetRuleContext<Definition_identContext>(0);
+		}
 		public RegexContext regex() {
 			return GetRuleContext<RegexContext>(0);
 		}
@@ -658,16 +692,16 @@ public partial class iroParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 84;
+			State = 94;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			if (_la==ARRAY_SYM) {
 				{
-				State = 83; Match(ARRAY_SYM);
+				State = 93; Match(ARRAY_SYM);
 				}
 			}
 
-			State = 86;
+			State = 96;
 			_la = _input.La(1);
 			if ( !(_la==REG_EQUALS_SYM || _la==EQUALS_SYM) ) {
 			_errHandler.RecoverInline(this);
@@ -679,39 +713,105 @@ public partial class iroParser : Parser {
 				_errHandler.ReportMatch(this);
 				Consume();
 			}
-			State = 91;
+			State = 101;
 			_errHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(_input,9,_ctx) ) {
+			switch ( Interpreter.AdaptivePredict(_input,11,_ctx) ) {
 			case 1:
 				{
-				State = 87; Match(IDENTIFIER);
+				State = 97; definition_ident();
 				}
 				break;
 
 			case 2:
 				{
-				State = 88; regex();
+				State = 98; regex();
 				}
 				break;
 
 			case 3:
 				{
-				State = 89; constant_ref();
+				State = 99; constant_ref();
 				}
 				break;
 
 			case 4:
 				{
-				State = 90; array();
+				State = 100; array();
 				}
 				break;
 			}
-			State = 94;
+			State = 104;
+			_errHandler.Sync(this);
+			switch ( Interpreter.AdaptivePredict(_input,12,_ctx) ) {
+			case 1:
+				{
+				State = 103; Match(SEMICOLON_SYM);
+				}
+				break;
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class Definition_identContext : ParserRuleContext {
+		public ITerminalNode IDENTIFIER() { return GetToken(iroParser.IDENTIFIER, 0); }
+		public ITerminalNode[] QUOTE_SYM() { return GetTokens(iroParser.QUOTE_SYM); }
+		public ITerminalNode QUOTE_SYM(int i) {
+			return GetToken(iroParser.QUOTE_SYM, i);
+		}
+		public Definition_identContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_definition_ident; } }
+		public override void EnterRule(IParseTreeListener listener) {
+			IiroListener typedListener = listener as IiroListener;
+			if (typedListener != null) typedListener.EnterDefinition_ident(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IiroListener typedListener = listener as IiroListener;
+			if (typedListener != null) typedListener.ExitDefinition_ident(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IiroVisitor<TResult> typedVisitor = visitor as IiroVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDefinition_ident(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public Definition_identContext definition_ident() {
+		Definition_identContext _localctx = new Definition_identContext(_ctx, State);
+		EnterRule(_localctx, 18, RULE_definition_ident);
+		int _la;
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 107;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
-			if (_la==SEMICOLON_SYM) {
+			if (_la==QUOTE_SYM) {
 				{
-				State = 93; Match(SEMICOLON_SYM);
+				State = 106; Match(QUOTE_SYM);
+				}
+			}
+
+			State = 109; Match(IDENTIFIER);
+			State = 111;
+			_errHandler.Sync(this);
+			_la = _input.La(1);
+			if (_la==QUOTE_SYM) {
+				{
+				State = 110; Match(QUOTE_SYM);
 				}
 			}
 
@@ -760,12 +860,12 @@ public partial class iroParser : Parser {
 	[RuleVersion(0)]
 	public ArrayContext array() {
 		ArrayContext _localctx = new ArrayContext(_ctx, State);
-		EnterRule(_localctx, 18, RULE_array);
+		EnterRule(_localctx, 20, RULE_array);
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 98;
+			State = 115;
 			_errHandler.Sync(this);
 			_alt = 1;
 			do {
@@ -773,19 +873,19 @@ public partial class iroParser : Parser {
 				case 1:
 					{
 					{
-					State = 96; Match(IDENTIFIER);
-					State = 97; Match(COMMA_SYM);
+					State = 113; Match(IDENTIFIER);
+					State = 114; Match(COMMA_SYM);
 					}
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 100;
+				State = 117;
 				_errHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(_input,11,_ctx);
+				_alt = Interpreter.AdaptivePredict(_input,15,_ctx);
 			} while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.InvalidAltNumber );
-			State = 102; Match(IDENTIFIER);
+			State = 119; Match(IDENTIFIER);
 			}
 		}
 		catch (RecognitionException re) {
@@ -824,11 +924,11 @@ public partial class iroParser : Parser {
 	[RuleVersion(0)]
 	public RegexContext regex() {
 		RegexContext _localctx = new RegexContext(_ctx, State);
-		EnterRule(_localctx, 20, RULE_regex);
+		EnterRule(_localctx, 22, RULE_regex);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 104; Match(REGEX);
+			State = 121; Match(REGEX);
 			}
 		}
 		catch (RecognitionException re) {
@@ -873,15 +973,15 @@ public partial class iroParser : Parser {
 	[RuleVersion(0)]
 	public Constant_refContext constant_ref() {
 		Constant_refContext _localctx = new Constant_refContext(_ctx, State);
-		EnterRule(_localctx, 22, RULE_constant_ref);
+		EnterRule(_localctx, 24, RULE_constant_ref);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 106; Match(REF_SYM);
-			State = 107; Match(REF_SYM);
-			State = 108; Match(SET_OPEN);
-			State = 109; Match(IDENTIFIER);
-			State = 110; Match(SET_CLOSE);
+			State = 123; Match(REF_SYM);
+			State = 124; Match(REF_SYM);
+			State = 125; Match(SET_OPEN);
+			State = 126; Match(IDENTIFIER);
+			State = 127; Match(SET_CLOSE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -896,44 +996,50 @@ public partial class iroParser : Parser {
 	}
 
 	public static readonly string _serializedATN =
-		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3\x17s\x4\x2\t\x2"+
-		"\x4\x3\t\x3\x4\x4\t\x4\x4\x5\t\x5\x4\x6\t\x6\x4\a\t\a\x4\b\t\b\x4\t\t"+
-		"\t\x4\n\t\n\x4\v\t\v\x4\f\t\f\x4\r\t\r\x3\x2\a\x2\x1C\n\x2\f\x2\xE\x2"+
-		"\x1F\v\x2\x3\x2\x3\x2\x3\x3\x3\x3\x5\x3%\n\x3\x3\x4\x3\x4\x3\x4\x5\x4"+
-		"*\n\x4\x3\x5\x3\x5\x3\x5\x3\x6\x3\x6\x5\x6\x31\n\x6\x3\x6\x3\x6\a\x6\x35"+
-		"\n\x6\f\x6\xE\x6\x38\v\x6\x3\x6\x3\x6\x3\a\x5\a=\n\a\x3\a\x5\a@\n\a\x3"+
-		"\a\x3\a\x3\a\x3\b\x3\b\x3\b\a\bH\n\b\f\b\xE\bK\v\b\x3\b\x3\b\x3\t\x3\t"+
-		"\x3\t\x3\t\x3\t\x3\t\x3\t\x3\n\x5\nW\n\n\x3\n\x3\n\x3\n\x3\n\x3\n\x5\n"+
-		"^\n\n\x3\n\x5\n\x61\n\n\x3\v\x3\v\x6\v\x65\n\v\r\v\xE\v\x66\x3\v\x3\v"+
-		"\x3\f\x3\f\x3\r\x3\r\x3\r\x3\r\x3\r\x3\r\x3\r\x2\x2\x2\xE\x2\x2\x4\x2"+
-		"\x6\x2\b\x2\n\x2\f\x2\xE\x2\x10\x2\x12\x2\x14\x2\x16\x2\x18\x2\x2\x3\x3"+
-		"\x2\x6\au\x2\x1D\x3\x2\x2\x2\x4$\x3\x2\x2\x2\x6)\x3\x2\x2\x2\b+\x3\x2"+
-		"\x2\x2\n.\x3\x2\x2\x2\f<\x3\x2\x2\x2\xE\x44\x3\x2\x2\x2\x10N\x3\x2\x2"+
-		"\x2\x12V\x3\x2\x2\x2\x14\x64\x3\x2\x2\x2\x16j\x3\x2\x2\x2\x18l\x3\x2\x2"+
-		"\x2\x1A\x1C\x5\x4\x3\x2\x1B\x1A\x3\x2\x2\x2\x1C\x1F\x3\x2\x2\x2\x1D\x1B"+
-		"\x3\x2\x2\x2\x1D\x1E\x3\x2\x2\x2\x1E \x3\x2\x2\x2\x1F\x1D\x3\x2\x2\x2"+
-		" !\a\x2\x2\x3!\x3\x3\x2\x2\x2\"%\x5\x6\x4\x2#%\x5\n\x6\x2$\"\x3\x2\x2"+
-		"\x2$#\x3\x2\x2\x2%\x5\x3\x2\x2\x2&*\x5\b\x5\x2\'*\x5\f\a\x2(*\x5\x10\t"+
-		"\x2)&\x3\x2\x2\x2)\'\x3\x2\x2\x2)(\x3\x2\x2\x2*\a\x3\x2\x2\x2+,\a\x14"+
-		"\x2\x2,-\x5\x12\n\x2-\t\x3\x2\x2\x2.\x30\a\x14\x2\x2/\x31\a\b\x2\x2\x30"+
-		"/\x3\x2\x2\x2\x30\x31\x3\x2\x2\x2\x31\x32\x3\x2\x2\x2\x32\x36\a\f\x2\x2"+
-		"\x33\x35\x5\x6\x4\x2\x34\x33\x3\x2\x2\x2\x35\x38\x3\x2\x2\x2\x36\x34\x3"+
-		"\x2\x2\x2\x36\x37\x3\x2\x2\x2\x37\x39\x3\x2\x2\x2\x38\x36\x3\x2\x2\x2"+
-		"\x39:\a\r\x2\x2:\v\x3\x2\x2\x2;=\a\x14\x2\x2<;\x3\x2\x2\x2<=\x3\x2\x2"+
-		"\x2=?\x3\x2\x2\x2>@\a\b\x2\x2?>\x3\x2\x2\x2?@\x3\x2\x2\x2@\x41\x3\x2\x2"+
-		"\x2\x41\x42\a\xE\x2\x2\x42\x43\x5\xE\b\x2\x43\r\x3\x2\x2\x2\x44\x45\a"+
-		"\x14\x2\x2\x45I\a\f\x2\x2\x46H\x5\x6\x4\x2G\x46\x3\x2\x2\x2HK\x3\x2\x2"+
-		"\x2IG\x3\x2\x2\x2IJ\x3\x2\x2\x2JL\x3\x2\x2\x2KI\x3\x2\x2\x2LM\a\r\x2\x2"+
-		"M\xF\x3\x2\x2\x2NO\a\xE\x2\x2OP\a\x4\x2\x2PQ\a\x10\x2\x2QR\a\x14\x2\x2"+
-		"RS\a\x10\x2\x2ST\a\xF\x2\x2T\x11\x3\x2\x2\x2UW\a\b\x2\x2VU\x3\x2\x2\x2"+
-		"VW\x3\x2\x2\x2WX\x3\x2\x2\x2X]\t\x2\x2\x2Y^\a\x14\x2\x2Z^\x5\x16\f\x2"+
-		"[^\x5\x18\r\x2\\^\x5\x14\v\x2]Y\x3\x2\x2\x2]Z\x3\x2\x2\x2][\x3\x2\x2\x2"+
-		"]\\\x3\x2\x2\x2^`\x3\x2\x2\x2_\x61\a\xF\x2\x2`_\x3\x2\x2\x2`\x61\x3\x2"+
-		"\x2\x2\x61\x13\x3\x2\x2\x2\x62\x63\a\x14\x2\x2\x63\x65\a\t\x2\x2\x64\x62"+
-		"\x3\x2\x2\x2\x65\x66\x3\x2\x2\x2\x66\x64\x3\x2\x2\x2\x66g\x3\x2\x2\x2"+
-		"gh\x3\x2\x2\x2hi\a\x14\x2\x2i\x15\x3\x2\x2\x2jk\a\x3\x2\x2k\x17\x3\x2"+
-		"\x2\x2lm\a\x11\x2\x2mn\a\x11\x2\x2no\a\f\x2\x2op\a\x14\x2\x2pq\a\r\x2"+
-		"\x2q\x19\x3\x2\x2\x2\xE\x1D$)\x30\x36<?IV]`\x66";
+		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3\x17\x84\x4\x2\t"+
+		"\x2\x4\x3\t\x3\x4\x4\t\x4\x4\x5\t\x5\x4\x6\t\x6\x4\a\t\a\x4\b\t\b\x4\t"+
+		"\t\t\x4\n\t\n\x4\v\t\v\x4\f\t\f\x4\r\t\r\x4\xE\t\xE\x3\x2\a\x2\x1E\n\x2"+
+		"\f\x2\xE\x2!\v\x2\x3\x2\x3\x2\x3\x3\x3\x3\x5\x3\'\n\x3\x3\x4\x3\x4\x3"+
+		"\x4\x5\x4,\n\x4\x3\x5\x3\x5\x3\x5\x3\x6\x3\x6\x5\x6\x33\n\x6\x3\x6\x3"+
+		"\x6\a\x6\x37\n\x6\f\x6\xE\x6:\v\x6\x3\x6\x3\x6\x3\a\x5\a?\n\a\x3\a\x5"+
+		"\a\x42\n\a\x3\a\x3\a\x3\a\x3\b\x3\b\x3\b\a\bJ\n\b\f\b\xE\bM\v\b\x3\b\x3"+
+		"\b\x6\bQ\n\b\r\b\xE\bR\x3\b\x3\b\x5\bW\n\b\x3\t\x3\t\x3\t\x3\t\x3\t\x3"+
+		"\t\x3\t\x3\n\x5\n\x61\n\n\x3\n\x3\n\x3\n\x3\n\x3\n\x5\nh\n\n\x3\n\x5\n"+
+		"k\n\n\x3\v\x5\vn\n\v\x3\v\x3\v\x5\vr\n\v\x3\f\x3\f\x6\fv\n\f\r\f\xE\f"+
+		"w\x3\f\x3\f\x3\r\x3\r\x3\xE\x3\xE\x3\xE\x3\xE\x3\xE\x3\xE\x3\xE\x2\x2"+
+		"\x2\xF\x2\x2\x4\x2\x6\x2\b\x2\n\x2\f\x2\xE\x2\x10\x2\x12\x2\x14\x2\x16"+
+		"\x2\x18\x2\x1A\x2\x2\x3\x3\x2\x6\a\x89\x2\x1F\x3\x2\x2\x2\x4&\x3\x2\x2"+
+		"\x2\x6+\x3\x2\x2\x2\b-\x3\x2\x2\x2\n\x30\x3\x2\x2\x2\f>\x3\x2\x2\x2\xE"+
+		"\x46\x3\x2\x2\x2\x10X\x3\x2\x2\x2\x12`\x3\x2\x2\x2\x14m\x3\x2\x2\x2\x16"+
+		"u\x3\x2\x2\x2\x18{\x3\x2\x2\x2\x1A}\x3\x2\x2\x2\x1C\x1E\x5\x4\x3\x2\x1D"+
+		"\x1C\x3\x2\x2\x2\x1E!\x3\x2\x2\x2\x1F\x1D\x3\x2\x2\x2\x1F \x3\x2\x2\x2"+
+		" \"\x3\x2\x2\x2!\x1F\x3\x2\x2\x2\"#\a\x2\x2\x3#\x3\x3\x2\x2\x2$\'\x5\x6"+
+		"\x4\x2%\'\x5\n\x6\x2&$\x3\x2\x2\x2&%\x3\x2\x2\x2\'\x5\x3\x2\x2\x2(,\x5"+
+		"\b\x5\x2),\x5\f\a\x2*,\x5\x10\t\x2+(\x3\x2\x2\x2+)\x3\x2\x2\x2+*\x3\x2"+
+		"\x2\x2,\a\x3\x2\x2\x2-.\a\x14\x2\x2./\x5\x12\n\x2/\t\x3\x2\x2\x2\x30\x32"+
+		"\a\x14\x2\x2\x31\x33\a\b\x2\x2\x32\x31\x3\x2\x2\x2\x32\x33\x3\x2\x2\x2"+
+		"\x33\x34\x3\x2\x2\x2\x34\x38\a\f\x2\x2\x35\x37\x5\x6\x4\x2\x36\x35\x3"+
+		"\x2\x2\x2\x37:\x3\x2\x2\x2\x38\x36\x3\x2\x2\x2\x38\x39\x3\x2\x2\x2\x39"+
+		";\x3\x2\x2\x2:\x38\x3\x2\x2\x2;<\a\r\x2\x2<\v\x3\x2\x2\x2=?\a\x14\x2\x2"+
+		">=\x3\x2\x2\x2>?\x3\x2\x2\x2?\x41\x3\x2\x2\x2@\x42\a\b\x2\x2\x41@\x3\x2"+
+		"\x2\x2\x41\x42\x3\x2\x2\x2\x42\x43\x3\x2\x2\x2\x43\x44\a\xE\x2\x2\x44"+
+		"\x45\x5\xE\b\x2\x45\r\x3\x2\x2\x2\x46V\a\x14\x2\x2GK\a\f\x2\x2HJ\x5\x6"+
+		"\x4\x2IH\x3\x2\x2\x2JM\x3\x2\x2\x2KI\x3\x2\x2\x2KL\x3\x2\x2\x2LN\x3\x2"+
+		"\x2\x2MK\x3\x2\x2\x2NW\a\r\x2\x2OQ\x5\x6\x4\x2PO\x3\x2\x2\x2QR\x3\x2\x2"+
+		"\x2RP\x3\x2\x2\x2RS\x3\x2\x2\x2ST\x3\x2\x2\x2TU\a\xF\x2\x2UW\x3\x2\x2"+
+		"\x2VG\x3\x2\x2\x2VP\x3\x2\x2\x2W\xF\x3\x2\x2\x2XY\a\xE\x2\x2YZ\a\x4\x2"+
+		"\x2Z[\a\x10\x2\x2[\\\a\x14\x2\x2\\]\a\x10\x2\x2]^\a\xF\x2\x2^\x11\x3\x2"+
+		"\x2\x2_\x61\a\b\x2\x2`_\x3\x2\x2\x2`\x61\x3\x2\x2\x2\x61\x62\x3\x2\x2"+
+		"\x2\x62g\t\x2\x2\x2\x63h\x5\x14\v\x2\x64h\x5\x18\r\x2\x65h\x5\x1A\xE\x2"+
+		"\x66h\x5\x16\f\x2g\x63\x3\x2\x2\x2g\x64\x3\x2\x2\x2g\x65\x3\x2\x2\x2g"+
+		"\x66\x3\x2\x2\x2hj\x3\x2\x2\x2ik\a\xF\x2\x2ji\x3\x2\x2\x2jk\x3\x2\x2\x2"+
+		"k\x13\x3\x2\x2\x2ln\a\x10\x2\x2ml\x3\x2\x2\x2mn\x3\x2\x2\x2no\x3\x2\x2"+
+		"\x2oq\a\x14\x2\x2pr\a\x10\x2\x2qp\x3\x2\x2\x2qr\x3\x2\x2\x2r\x15\x3\x2"+
+		"\x2\x2st\a\x14\x2\x2tv\a\t\x2\x2us\x3\x2\x2\x2vw\x3\x2\x2\x2wu\x3\x2\x2"+
+		"\x2wx\x3\x2\x2\x2xy\x3\x2\x2\x2yz\a\x14\x2\x2z\x17\x3\x2\x2\x2{|\a\x3"+
+		"\x2\x2|\x19\x3\x2\x2\x2}~\a\x11\x2\x2~\x7F\a\x11\x2\x2\x7F\x80\a\f\x2"+
+		"\x2\x80\x81\a\x14\x2\x2\x81\x82\a\r\x2\x2\x82\x1B\x3\x2\x2\x2\x12\x1F"+
+		"&+\x32\x38>\x41KRV`gjmqw";
 	public static readonly ATN _ATN =
 		new ATNDeserializer().Deserialize(_serializedATN.ToCharArray());
 }

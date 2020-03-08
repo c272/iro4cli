@@ -24,17 +24,20 @@ sys_set: IDENTIFIER ARRAY_SYM? SET_OPEN statement* SET_CLOSE;
 
 //Defining a normal named/unnamed set.
 set: IDENTIFIER? ARRAY_SYM? COLON_SYM typed_set;
-typed_set: IDENTIFIER SET_OPEN statement* SET_CLOSE;
+typed_set: IDENTIFIER (SET_OPEN statement* SET_CLOSE | statement+ SEMICOLON_SYM);
 
 //Including an external set.
 include: COLON_SYM INCLUDE QUOTE_SYM IDENTIFIER QUOTE_SYM SEMICOLON_SYM;
 
 //Definition, possible right hand sides of attribute.
-definition: ARRAY_SYM? (EQUALS_SYM | REG_EQUALS_SYM) (IDENTIFIER //Literal (eg. myname)
+definition: ARRAY_SYM? (EQUALS_SYM | REG_EQUALS_SYM) (definition_ident //Literal (eg. myname)
 			| regex //Regular expression.
 			| constant_ref //Reference to a defined const (eg. $${__MYCONST}).
 			| array
 			) SEMICOLON_SYM?;
+
+//Definition identifier. Can have surrounding quotes.
+definition_ident: QUOTE_SYM? IDENTIFIER QUOTE_SYM?;
 
 //An array of values.
 array: (IDENTIFIER COMMA_SYM)+ IDENTIFIER;
