@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://github.com/c272/iro4cli/raw/master/logo.png"/>
+<img src="https://github.com/c272/iro4cli/raw/master/logo.png?width=100&height=100"/>
 <img src="https://img.shields.io/github/issues/c272/iro4cli"> <img src="https://img.shields.io/travis/c272/iro4cli"> <img src="https://img.shields.io/badge/%2ENET->=4.7.1-blue">
 </div>
 
