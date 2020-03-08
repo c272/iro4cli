@@ -1,7 +1,8 @@
 <div align="center">
-<img src="https://github.com/c272/iro4cli/raw/master/logo.png" width=100/>
+<img src="https://github.com/c272/iro4cli/raw/master/logo.png" width=200/>
 <br>
 <img src="https://img.shields.io/github/issues/c272/iro4cli"> <img src="https://img.shields.io/travis/c272/iro4cli"> <img src="https://img.shields.io/badge/%2ENET->=4.7.1-blue">
+<br>
 </div>
 
 An open-source, CLI based rewrite of Iro, supporting automatic VSCode extension generation. It's an easy to use command line grammar file generator, that will bundle up a provided Iro grammar and create a various different grammar targets from it, and can **automagically** generate VSCode extensions to upload to the marketplace. Some of the available targets include:
