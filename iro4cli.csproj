@@ -39,6 +39,9 @@
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
       <HintPath>packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="CommandLine, Version=2.7.82.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
+      <HintPath>packages\CommandLineParser.2.7.82\lib\net461\CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="shortid, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\shortid.2.0.0\lib\net45\shortid.dll</HintPath>
     </Reference>
@@ -52,7 +55,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ANTLRDebug.cs" />
+    <Compile Include="CLI\IroCLIOptions.cs" />
+    <Compile Include="Debug\ANTLRDebug.cs" />
     <Compile Include="Compiler\Compiler.cs" />
     <Compile Include="Compiler\TextmateCompiler.cs" />
     <Compile Include="Data Structures\Compilation\CompileResult.cs" />
@@ -68,7 +72,7 @@
     <Compile Include="Data Structures\Parsing\IroSet.cs" />
     <Compile Include="Data Structures\Parsing\IroValues.cs" />
     <Compile Include="Emulator.cs" />
-    <Compile Include="Error.cs" />
+    <Compile Include="Debug\Error.cs" />
     <Compile Include="Grammar\iro.g4.lexer.cs">
       <DependentUpon>iro.g4</DependentUpon>
     </Compile>

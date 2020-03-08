@@ -9,6 +9,9 @@ using System.Xml.Linq;
 
 namespace iro4cli.Compile
 {
+    /// <summary>
+    /// Iro compile target for Textmate grammars.
+    /// </summary>
     public class TextmateCompiler : ICompileTarget
     {
         //The pending context members to be evaluated.
