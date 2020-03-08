@@ -149,6 +149,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
     ]
 }</value>
   </data>
+  <data name="linuxDebug_sh" xml:space="preserve">
+    <value>code --extensionDevelopmentPath=./</value>
+  </data>
   <data name="README_md" xml:space="preserve">
     <value># {extension_name} README
 
@@ -246,6 +249,9 @@ Added features X, Y, and Z.
 
 * To start using your extension with Visual Studio Code copy it into the `&lt;user home&gt;/.vscode/extensions` folder and restart Code.
 * To share your extension with the world, read on https://code.visualstudio.com/docs about publishing an extension.</value>
+  </data>
+  <data name="winDebug_bat" xml:space="preserve">
+    <value>code --extensionDevelopmentPath=%~dp0</value>
   </data>
   <data name="_vscodeignore" xml:space="preserve">
     <value>.vscode/**

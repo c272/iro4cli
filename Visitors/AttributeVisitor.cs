@@ -31,11 +31,11 @@ namespace iro4cli
             if (context.ARRAY_SYM() != null)
             {
                 //Yes, must be an identifier or an array on the right.
-                if (context.IDENTIFIER() != null)
+                if (context.definition_ident() != null)
                 {
                     //Single value.
                     var list = new IroList();
-                    list.Add(new IroValue(context.IDENTIFIER().GetText()));
+                    list.Add(new IroValue(context.definition_ident().IDENTIFIER().GetText()));
                     return list;
                 }
                 else if (context.array() != null)
@@ -93,14 +93,14 @@ namespace iro4cli
             else if (context.EQUALS_SYM() != null)
             {
                 //Must be a normal identifier.
-                if (context.IDENTIFIER() == null)
+                if (context.definition_ident() == null)
                 {
                     Error.Fatal(context, "Value provided for standard non-regex variable must be a string.");
                     return null;
                 }
 
                 //Return the value.
-                return new IroValue(context.IDENTIFIER().GetText());
+                return new IroValue(context.definition_ident().IDENTIFIER().GetText());
             }
 
             //Unknown.

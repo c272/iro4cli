@@ -97,6 +97,13 @@ public interface IiroVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitDefinition([NotNull] iroParser.DefinitionContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="iroParser.definition_ident"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDefinition_ident([NotNull] iroParser.Definition_identContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="iroParser.array"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

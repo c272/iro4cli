@@ -132,6 +132,17 @@ public interface IiroListener : IParseTreeListener {
 	void ExitDefinition([NotNull] iroParser.DefinitionContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="iroParser.definition_ident"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDefinition_ident([NotNull] iroParser.Definition_identContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="iroParser.definition_ident"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDefinition_ident([NotNull] iroParser.Definition_identContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="iroParser.array"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

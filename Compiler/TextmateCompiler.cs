@@ -345,6 +345,9 @@ namespace iro4cli.Compile
         {
             try
             {
+                //Replace invalid XML characters.
+                xml = xml.Replace("&", "&amp;");
+
                 XDocument doc = XDocument.Parse(xml);
                 return doc.ToString();
             }
@@ -470,6 +473,10 @@ namespace iro4cli.Compile
 
             //Write quickstart to file.
             WriteExtFile(Path.Combine(folderPath, "vsc-extension-quickstart.md"), Resources.vsc_extension_quickstart_md);
+
+            //Write extension debug script to file (twice) for Linux and Windows.
+            WriteExtFile(Path.Combine(folderPath, "debug_win.bat"), Resources.winDebug_bat);
+            WriteExtFile(Path.Combine(folderPath, "debug_linux.sh"), Resources.linuxDebug_sh);
 
             //Finished writing extension.
             Console.WriteLine("Finished writing extension!");
