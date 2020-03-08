@@ -1,6 +1,9 @@
-﻿using shortid;
+﻿using iro4cli.Templates;
+using Newtonsoft.Json;
+using shortid;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -350,6 +353,179 @@ namespace iro4cli.Compile
                 //Failed, just return normal XML.
                 Error.Compile("Failed to generate valid Textmate file: '" + e.Message + "'.");
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Writes a VSCode extension to a given location.
+        /// </summary>
+        public static void WriteVSCExtension(string tmText, string folderPath, Dictionary<string, IroVariable> data)
+        {
+            //Get out the name & file extensions of the grammar.
+            string grammarName = ((IroValue)data["name"]).Value;
+            List<string> fileExts = ((IroList)data["file_extensions"]).Select(x => ((IroValue)x).Value).ToList();
+
+            //Make the proper folder paths.
+            folderPath = Path.Combine(folderPath, grammarName + "-vscode");
+            try
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            catch (Exception e)
+            {
+                Error.CommandLine("Failed to create VSCode extension directory: '" + e.Message + "'.");
+                return;
+            }
+
+            //Create the VSCEData.
+            var vsce = new VSCEData();
+            Console.Write("Enter the name of your VSCode extension: ");
+            string vscName = Console.ReadLine();
+            Console.Write("Enter the description of your VSCode extension: ");
+            string vscDesc = Console.ReadLine();
+            Console.Write("Enter a display name for your language: ");
+            string vscDisplayName = Console.ReadLine();
+            vsce.ExtensionName = vscName;
+            vsce.Description = vscDesc;
+            vsce.Name = vscDisplayName;
+            vsce.Contributes.Grammars.Add(new VSCodeGrammar()
+            {
+                Language = grammarName,
+                RootScope = "source." + grammarName,
+                Path = "./syntaxes/" + grammarName + ".tmLanguage"
+            });
+            vsce.Contributes.Languages.Add(new VSCodeLanguage()
+            {
+                Aliases = new List<string>()
+                {
+                    vscDisplayName,
+                    grammarName
+                },
+                ID = grammarName,
+                Extensions = fileExts
+            });
+
+            //Write the package.json to file.
+            WriteExtFile(Path.Combine(folderPath, "package.json"), JsonConvert.SerializeObject(vsce));
+
+            //Make a language configuration file.
+            string res = "";
+            while (res.ToUpper() != "Y" && res.ToUpper() != "N")
+            {
+                Console.Write("Do you want to make a custom language configuration? (Y/N): ");
+                res = Console.ReadLine();
+            }
+
+            var langConfig = new VSCELanguageConfiguration();
+
+            //Does the user want to make a custom language configuration?
+            if (res.ToUpper() == "Y")
+            {
+                langConfig.Comments.LineComment = GetSingle("What starts a single line comment in your language? (blank for none): ");
+                langConfig.Comments.BlockComments = GetMultiple("What starts/ends a block comment in your language? (blank for none).", 2);
+                langConfig.Brackets = GetMultiple("What represents brackets in your language (in open-close order)?", 2);
+                Console.WriteLine("What pairs can VSCode auto-close in your language? (in open-close order, pair by pair)");
+                while (true)
+                {
+                    Console.Write("Finish entering pairs? (Y/N): ");
+                    if (Console.ReadLine().ToUpper() != "N") { break; }
+
+                    langConfig.AutoClosingPairs.Add(GetMultiple("Enter a single pair.", 2));
+                   
+                }
+                langConfig.SurroundingPairs = langConfig.AutoClosingPairs;
+            }
+
+            //Write language config to file.
+            WriteExtFile(Path.Combine(folderPath, "language-configuration.json"), JsonConvert.SerializeObject(langConfig));
+
+            //Write the grammar to file.
+            try { Directory.CreateDirectory(Path.Combine(folderPath, "syntaxes")); }
+            catch (Exception e)
+            {
+                Error.Compile("Failed to create the 'syntaxes' directory for VSCode extension: '" + e.Message + "'.");
+                return;
+            }
+            WriteExtFile(Path.Combine(folderPath, "syntaxes", grammarName + ".tmLanguage"), tmText);
+
+            //Write the launch.json to file.
+            try { Directory.CreateDirectory(Path.Combine(folderPath, ".vscode")); }
+            catch (Exception e)
+            {
+                Error.Compile("Failed to create the '.vscode' directory for VSCode extension: '" + e.Message + "'.");
+                return;
+            }
+            WriteExtFile(Path.Combine(folderPath, ".vscode", "launch.json"), Resources.launch_json);
+
+            //Write the extension changelog to file.
+            string changelog = Resources.CHANGELOG_md.Replace("{extension_name}", grammarName);
+            WriteExtFile(Path.Combine(folderPath, "CHANGELOG.md"), changelog);
+
+            //Write the README to file.
+            string readme = Resources.README_md.Replace("{extension_name}", grammarName);
+            WriteExtFile(Path.Combine(folderPath, "README.md"), readme);
+
+            //Write VSCode ignore to file.
+            WriteExtFile(Path.Combine(folderPath, ".vscodeignore"), Resources._vscodeignore);
+
+            //Write quickstart to file.
+            WriteExtFile(Path.Combine(folderPath, "vsc-extension-quickstart.md"), Resources.vsc_extension_quickstart_md);
+
+            //Finished writing extension.
+            Console.WriteLine("Finished writing extension!");
+        }
+
+        /// <summary>
+        /// Gets a list of string values, for a specific multiple if required.
+        /// </summary>
+        private static List<string> GetMultiple(string prompt, int multipleRequired=1)
+        {
+            var multiList = new List<string>();
+
+            Console.WriteLine(prompt);
+            Console.WriteLine("Enter a blank to end the list.");
+            int i = 1;
+            while (true)
+            {
+                Console.Write("Value " + i + ": ");
+                string out_ = Console.ReadLine();
+                if (out_ == "") { break; }
+
+                multiList.Add(out_);
+                i++;
+            }
+
+            //Check the multiple is valid.
+            if (multiList.Count % multipleRequired != 0)
+            {
+                Console.WriteLine("Amount of members in the list must be a multiple of " + multipleRequired + ".");
+                return GetMultiple(prompt, multipleRequired);
+            }
+
+            return multiList;
+        }
+
+        /// <summary>
+        /// Gets a single string value, given a prompt.
+        /// </summary>
+        private static string GetSingle(string prompt)
+        {
+            Console.Write(prompt);
+            return Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Write an extension file.
+        /// </summary>
+        private static void WriteExtFile(string path, string contents)
+        {
+            try
+            {
+                File.WriteAllText(path, contents);
+            }
+            catch (Exception e)
+            {
+                Error.Compile("Failed writing VSCode extension to file, '" + e.Message + "'.");
             }
         }
     }
