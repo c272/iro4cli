@@ -101,6 +101,9 @@
     <Compile Include="Visitors\SetVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".travis.yml">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </None>
     <None Include="App.config" />
     <Antlr4 Include="Grammar\iro.g4">
       <Generator>MSBuild:Compile</Generator>
