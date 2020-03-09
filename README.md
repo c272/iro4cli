@@ -27,7 +27,7 @@ To get started using Iro4CLI on Windows, all you'll need is .NET Framework 4.7.1
 
 If you're using Linux, however, you'll have to build the project using Mono and `mkbundle`. Make sure you have the following dependencies installed as a nuget packages before attempting to build with `mkbundle`:
 
- - `Antlr4` (**version specific**)
+ - `Antlr4`
  - `Antlr4.CodeGeneration`
  - `Antlr4.Runtime`
  - `CommandLineParser`
