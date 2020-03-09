@@ -254,10 +254,19 @@ namespace iro4cli
             }
 
             //Make sure all the patterns have textmate scopes.
-            if (styles.Where(x => x.AceScope != null).Count() != styles.Count)
+            foreach (var style in styles)
             {
-                Error.Compile("One or more styles for a pattern does not have an Ace scope defined.");
-                return null;
+                if (style.AceScope == null)
+                {
+                    //Missing ace, can inherit?
+                    if (style.TextmateScope == null)
+                    {
+                        Error.Compile("No Textmate or Atom scope is defined for style '" + style.Name + "'.");
+                        return null;
+                    }
+
+                    style.AceScope = style.TextmateScope;
+                }
             }
 
             return styles;
