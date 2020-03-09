@@ -6,7 +6,7 @@
 <br>
 </div>
 
-An open-source, CLI based rewrite of Iro, supporting automatic VSCode extension generation. It's an easy to use command line grammar file generator, that will bundle up a provided Iro grammar and create a various different grammar targets from it, and can **automagically** generate VSCode extensions to upload to the marketplace. Some of the available targets include:
+An open-source, CLI based rewrite of Iro by Chris Ainsley, supporting automatic VSCode extension generation. It's an easy to use command line grammar file generator, that will bundle up a provided Iro grammar and create a various different grammar targets from it, and can **automagically** generate VSCode extensions to upload to the marketplace. Some of the available targets include:
 
  - Textmate
  - Atom
