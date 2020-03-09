@@ -30,7 +30,7 @@ namespace iro4cli
             text.AppendLine("*/");
             text.AppendLine();
             text.AppendLine("define(function(require, exports, module) {");
-            text.AppendLine("use strict");
+            text.AppendLine("\"use strict\";");
             text.AppendLine("var oop = require(\"../lib/oop\");");
             text.AppendLine("var TextHighlightRules = require(\"./text_highlight_rules\").TextHighlightRules;");
             text.AppendLine("/* --------------------- START ----------------------------- */");
@@ -69,7 +69,7 @@ namespace iro4cli
 
             //Close the set.
             text.AppendLine("};");
-            text.AppendLine("this.NormalizeRules();");
+            text.AppendLine("this.normalizeRules();");
             text.AppendLine("};");
 
             //Footer.
@@ -134,7 +134,7 @@ namespace iro4cli
                 text.AppendLine("{");
                 text.AppendLine("\"token\": \"" + ilpStyles[0].AceScope + "\",");
                 //Replace normal '\' with '\\', since it's inside another string.
-                text.AppendLine("\"regex\": \"" + ilp.Data.Replace("\\", "\\\\") + "\",");
+                text.AppendLine("\"regex\": \"" + ilp.Data.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\",");
 
                 //Queue an ILP context to be created later (if it's not already created).
                 string pushCtxName;
@@ -207,7 +207,7 @@ namespace iro4cli
             //Add the pop rule.
             text.AppendLine("{");
             text.AppendLine("\"token\": \"" + popStyles[0].AceScope + "\",");
-            text.AppendLine("\"regex\": \"" + ilp.PopData.Replace("\\", "\\\\") + "\",");
+            text.AppendLine("\"regex\": \"" + ilp.PopData.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\",");
             text.AppendLine("\"next\": \"pop\"");
             text.AppendLine("},");
 
