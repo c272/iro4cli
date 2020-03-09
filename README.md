@@ -57,7 +57,7 @@ So far the following targets have been implemented:
 - [x] Textmate
 - [x] CSS
 - [x] Ace
-- [ ] Atom
+- [x] Atom
 - [ ] Pygments
 - [ ] Rouge
 
