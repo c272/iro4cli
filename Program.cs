@@ -40,7 +40,7 @@ namespace iro4cli
                 targets.Add(new TextmateCompiler());
             }
             if (opts.GenerateAce) { targets.Add(new AceCompiler()); } //ace
-            if (opts.GenerateAtom) { targets.Add(new AtomCompiler()); } //atom
+            if (opts.GenerateAtom || opts.GenerateAtomExtension) { targets.Add(new AtomCompiler()); } //atom
             if (opts.GenerateCSS) { targets.Add(new CSSCompiler()); } //css
             if (opts.GeneratePygments) { targets.Add(new PygmentsCompiler()); } //pygments
             if (opts.GenerateRouge) { targets.Add(new RougeCompiler()); } //rouge
@@ -73,7 +73,13 @@ namespace iro4cli
                 switch (result.Target)
                 {
                     case Target.Ace: ext = ".js"; break;
-                    case Target.Atom: ext = ".cson"; break;
+                    case Target.Atom: 
+                        ext = ".cson";
+                        if (opts.GenerateAtomExtension)
+                        {
+                            AtomCompiler.MakeAtomExtension(((IroValue)vars["name"]).Value, result.GeneratedFile, Environment.CurrentDirectory);
+                        }
+                        break;
                     case Target.CSS: ext = ".css"; break;
                     case Target.Pygments: ext = ".py"; break;
                     case Target.Rouge: ext = ".rb"; break;

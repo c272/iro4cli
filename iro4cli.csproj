@@ -92,6 +92,11 @@
     <Compile Include="Compiler\PygmentsCompiler.cs" />
     <Compile Include="Compiler\RougeCompiler.cs" />
     <Compile Include="Compiler\Sublime3Compiler.cs" />
+    <Compile Include="Templates\AtomResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AtomResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Templates\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -110,6 +115,10 @@
       <CustomToolNamespace>iro4cli.Grammar</CustomToolNamespace>
     </Antlr4>
     <None Include="packages.config" />
+    <EmbeddedResource Include="Templates\AtomResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AtomResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Templates\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

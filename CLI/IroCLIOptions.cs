@@ -31,6 +31,12 @@ namespace iro4cli.CLI
         public bool GenerateVSCodeExtension { get; set; }
 
         /// <summary>
+        /// Whether to generate an Atom extension with a CoffeeScript textmate file.
+        /// </summary>
+        [Option('e', "atom-ext", Default = false, HelpText = "Generates an Atom extension using a CoffeeScript Textmate grammar.")]
+        public bool GenerateAtomExtension { get; set; }
+
+        /// <summary>
         /// Whether to generate an atom grammar file.
         /// </summary>
         [Option('a', "atom", Default = false, HelpText = "Generates an Atom grammar file.")]
