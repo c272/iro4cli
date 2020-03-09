@@ -47,7 +47,20 @@ file_extensions [] = exgr, exg;
 
 styles [] {
     .example : style {
-    
+        //todo
     }
 }
 ```
+
+## Progress
+So far the following targets have been implemented:
+- [x] Textmate
+- [x] CSS
+- [x] Ace
+- [ ] Atom
+- [ ] Pygments
+- [ ] Rouge
+*Feature parity with Iro online here. Additional goals below.*
+- [x] VSCode Extension Generation
+- [ ] HighlightJS
+- [ ] ANTLR Input
