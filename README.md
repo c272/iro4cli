@@ -6,7 +6,7 @@
 <br>
 </div>
 
-An open-source, CLI based rewrite of Iro by Chris Ainsley, supporting automatic VSCode extension generation. It's an easy to use command line grammar file generator, that will bundle up a provided Iro grammar and create various different grammar targets from it, and can **automagically** generate VSCode extensions to upload to the marketplace. Some of the available targets include:
+An open-source, CLI based rewrite of Iro by Chris Ainsley, supporting automatic VSCode extension and Atom package generation. It's an easy to use command line tool, and will bundle up a provided Iro grammar and create various different grammar targets from it, **automagically** generating extensions to upload to the marketplace. Some of the available targets include:
 
  - Textmate
  - Atom
@@ -16,9 +16,9 @@ An open-source, CLI based rewrite of Iro by Chris Ainsley, supporting automatic 
  - Sublime 3
  - CSS
 
-The most basic command usage for Iro4CLI is the following:
+To create an Atom package and VSCode extension at the same time, you can use the following:
 ```bash
-iro grammarFile.iro -t
+iro grammarFile.iro --vscode --atomext
 ```
 To use the online **official** version of Iro, you can go to the [official website](http://eeyo.io/iro). For documentation on how to create Iro grammars, check the official documentation [here](http://eeyo.io/iro/documentation).
 
@@ -57,7 +57,7 @@ So far the following targets have been implemented:
 - [x] Textmate
 - [x] CSS
 - [x] Ace
-- [ ] Atom
+- [x] Atom
 - [ ] Pygments
 - [ ] Rouge
 
