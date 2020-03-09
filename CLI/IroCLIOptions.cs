@@ -21,7 +21,7 @@ namespace iro4cli.CLI
         /// <summary>
         /// Whether to generate textmate grammars or not.
         /// </summary>
-        [Option('t', "textmate", Default = true, HelpText = "Generates a textmate grammar file.")]
+        [Option('t', "textmate", Default = false, HelpText = "Generates a textmate grammar file.")]
         public bool GenerateTextmate { get; set; }
 
         /// <summary>
