@@ -60,7 +60,9 @@ So far the following targets have been implemented:
 - [ ] Atom
 - [ ] Pygments
 - [ ] Rouge
+
 *Feature parity with Iro online here. Additional goals below.*
+
 - [x] VSCode Extension Generation
 - [ ] HighlightJS
 - [ ] ANTLR Input
