@@ -18,7 +18,7 @@ An open-source, CLI based rewrite of Iro, supporting automatic VSCode extension 
 
 The most basic command usage for Iro4CLI is the following:
 ```bash
-iro grammarFile.iro
+iro grammarFile.iro -t
 ```
 To use the online **official** version or Iro, you can go to the [official website](http://eeyo.io/iro). For documentation on how to create Iro grammars, check the official documentation [here](http://eeyo.io/iro/documentation).
 
