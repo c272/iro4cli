@@ -64,5 +64,6 @@ So far the following targets have been implemented:
 *Feature parity with Iro online here. Additional goals below.*
 
 - [x] VSCode Extension Generation
+- [x] Atom Package Generation
 - [ ] HighlightJS
 - [ ] ANTLR Input
