@@ -177,7 +177,7 @@ namespace iro4cli.Compile
 
             //Begin capture regex.
             text.AppendLine("<key>begin</key>");
-            text.AppendLine("<string>" + pattern.Data.FormatForXML() + "</string>");
+            text.AppendLine("<string>" + pattern.Data + "</string>");
 
             //Begin capture styles.
             text.AppendLine("<key>beginCaptures</key>");
@@ -247,7 +247,7 @@ namespace iro4cli.Compile
 
             //Okay, add pop data.
             text.AppendLine("<key>end</key>");
-            text.AppendLine("<string>" + pattern.PopData.FormatForXML() + "</string>");
+            text.AppendLine("<string>" + pattern.PopData + "</string>");
             text.AppendLine("<key>endCaptures</key>");
             text.AppendLine("<dict>");
             for (int i = 0; i < popStyles.Count; i++)
@@ -291,7 +291,7 @@ namespace iro4cli.Compile
             //Add the initial match.
             text.AppendLine("<dict>");
             text.AppendLine("<key>match</key>");
-            text.AppendLine("<string>" + pattern.Data.FormatForXML() + "</string>");
+            text.AppendLine("<string>" + pattern.Data + "</string>");
 
             //Only one style? Just use the 'name' property.
             if (pattern.Styles.Count == 1) 
@@ -362,7 +362,26 @@ namespace iro4cli.Compile
             try
             {
                 XDocument doc = XDocument.Parse(xml);
-                return doc.ToString(); //this un-escapes stuff, FIX ME!!!
+
+                //Get the string representation out.
+                string indentedXml = doc.ToString();
+                var xmlBuilder = new StringBuilder(indentedXml);
+
+                //Try to format the Regex strings.
+                var matches = Regex.Matches(indentedXml, "<string>[^\r\n]*</string>");
+                foreach (Match match in matches)
+                {
+                    //Get the string out, XML format it.
+                    string regex = match.Value.Replace("<string>", "").Replace("</string>", "");
+                    regex = regex.FormatForXML();
+                    regex = "<string>" + regex + "</string>";
+
+                    xmlBuilder.Remove(match.Index, match.Length);
+                    xmlBuilder.Insert(match.Index, regex);
+                }
+
+                //Return the XML.
+                return xmlBuilder.ToString();
             }
             catch (Exception e)
             {
