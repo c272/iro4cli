@@ -177,7 +177,7 @@ namespace iro4cli.Compile
 
             //Begin capture regex.
             text.AppendLine("<key>begin</key>");
-            text.AppendLine("<string>" + pattern.Data + "</string>");
+            text.AppendLine("<string>" + pattern.Data.FormatForXML() + "</string>");
 
             //Begin capture styles.
             text.AppendLine("<key>beginCaptures</key>");
@@ -247,7 +247,7 @@ namespace iro4cli.Compile
 
             //Okay, add pop data.
             text.AppendLine("<key>end</key>");
-            text.AppendLine("<string>" + pattern.PopData + "</string>");
+            text.AppendLine("<string>" + pattern.PopData.FormatForXML() + "</string>");
             text.AppendLine("<key>endCaptures</key>");
             text.AppendLine("<dict>");
             for (int i = 0; i < popStyles.Count; i++)
@@ -362,7 +362,7 @@ namespace iro4cli.Compile
             try
             {
                 XDocument doc = XDocument.Parse(xml);
-                return doc.ToString();
+                return doc.ToString(); //this un-escapes stuff, FIX ME!!!
             }
             catch (Exception e)
             {

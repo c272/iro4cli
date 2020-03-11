@@ -308,9 +308,10 @@ namespace iro4cli.Compile
                             iroCtx.Members.Add(ParsePattern((IroSet)value));
                             break;
                         case "pop":
-                            Error.CompileWarning("Ignoring 'pop' rule parsing, not yet implemented.");
+                            //Pop rules are never directly parsed, only used as a result of inline_push or push.
                             break;
                         case "push":
+                            //todo: add push rules
                             throw new NotImplementedException();
                     }
                 }
