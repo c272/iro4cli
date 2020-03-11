@@ -27,7 +27,7 @@ set: IDENTIFIER? ARRAY_SYM? COLON_SYM typed_set;
 typed_set: IDENTIFIER (SET_OPEN statement* SET_CLOSE | statement+ SEMICOLON_SYM);
 
 //Including an external set.
-include: COLON_SYM INCLUDE QUOTE_SYM IDENTIFIER QUOTE_SYM SEMICOLON_SYM;
+include: COLON_SYM IDENTIFIER QUOTE_SYM IDENTIFIER QUOTE_SYM SEMICOLON_SYM;
 
 //Definition, possible right hand sides of attribute.
 definition: ARRAY_SYM? (EQUALS_SYM | REG_EQUALS_SYM) (definition_ident //Literal (eg. myname)
@@ -53,10 +53,7 @@ constant_ref: REF_SYM REF_SYM SET_OPEN IDENTIFIER SET_CLOSE;
  */
 
 //Regular expression.
-REGEX: L_BRACKET (~[()\n\r] | '\\(' | '\\)' | REGEX)* R_BRACKET '|'? REGEX?;
-
-//Reserved words.
-INCLUDE: 'include';
+REGEX: L_BRACKET (~[()\n\r] | '\\(' | '\\)' | REGEX)* R_BRACKET ('|' | '?' | '*' | '+')* REGEX?;
 
 //Operators & symbols.
 ESCAPED_BRACKET: '\\(' | '\\)';

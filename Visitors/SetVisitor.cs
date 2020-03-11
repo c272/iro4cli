@@ -64,9 +64,15 @@ namespace iro4cli
                 //Include?
                 else if (statement.include() != null)
                 {
+                    if (statement.include().IDENTIFIER()[0].GetText() != "include")
+                    {
+                        Error.Fatal(statement.include(), "Invalid inline set statement.");
+                        return null;
+                    }
+
                     //Add it to the list.
                     name = "include_" + ShortId.Generate(RAND_ID_LEN);
-                    value = new IroInclude(statement.include().IDENTIFIER().GetText());
+                    value = new IroInclude(statement.include().IDENTIFIER()[1].GetText());
                 }
                 
                 //Unrecognized statement in set.

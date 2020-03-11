@@ -20,7 +20,7 @@ namespace iro4cli
         public override IroVariable VisitInclude([NotNull] iroParser.IncludeContext context)
         {
             return new IroAttribute("include_" + ShortId.Generate(RAND_ID_LEN),
-                                    new IroInclude(context.IDENTIFIER().GetText()));
+                                    new IroInclude(context.IDENTIFIER()[1].GetText()));
         }
     }
 }

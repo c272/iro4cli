@@ -177,7 +177,7 @@ namespace iro4cli.Compile
                     continue;
                 }
 
-                pcd.Contexts.Add(ProcessContext(context.Key, (IroSet)context.Value));
+                pcd.Contexts.Add(ProcessContext(context.Key, (IroSet)context.Value, contextsSet));
             }
 
             //Use precompile data to process the given targets.
@@ -266,7 +266,7 @@ namespace iro4cli.Compile
         /// <summary>
         /// Processes a single context from the IroVariable form into an IroContext form.
         /// </summary>
-        private static IroContext ProcessContext(string contextName, IroSet context)
+        private static IroContext ProcessContext(string contextName, IroSet context, IroSet contexts)
         {
             var iroCtx = new IroContext(contextName);
 
@@ -302,13 +302,14 @@ namespace iro4cli.Compile
                     switch (((IroSet)value).SetType)
                     {
                         case "inline_push":
-                            iroCtx.Members.Add(ParseInlinePush((IroSet)value));
+                            iroCtx.Members.Add(ParseInlinePush((IroSet)value, contexts));
                             break;
                         case "pattern":
                             iroCtx.Members.Add(ParsePattern((IroSet)value));
                             break;
                         case "pop":
-                            throw new NotImplementedException();
+                            Error.CompileWarning("Ignoring 'pop' rule parsing, not yet implemented.");
+                            break;
                         case "push":
                             throw new NotImplementedException();
                     }
@@ -446,7 +447,7 @@ namespace iro4cli.Compile
         /// <summary>
         /// Parses a single inline push context member in Iro.
         /// </summary>
-        private static ContextMember ParseInlinePush(IroSet ilp)
+        private static ContextMember ParseInlinePush(IroSet ilp, IroSet contexts)
         {
             //Find the required elements 'regex', 'styles' and 'pop'.
             if (!ilp.ContainsKey("regex") || !ilp.ContainsKey("styles"))
@@ -456,8 +457,21 @@ namespace iro4cli.Compile
             }
             if (!ilp.ContainsSetOfType("pop") && !ilp.ContainsSetOfType("eol_pop"))
             {
-                Error.Compile("Inline push patterns must have a 'pop' or 'eol_pop' set to know when to end the state.");
-                return null;
+                //No pops or eol_pops here. Try to find one in children.
+                var popsFound = FindPops(ilp, contexts);
+                if (popsFound.Count == 0)
+                {
+                    Error.Compile("Inline push patterns must have a 'pop' or 'eol_pop' set to know when to end the state.");
+                    return null;
+                }
+                if (popsFound.Count > 1)
+                {
+                    Error.Compile("Inline push patterns can only contain one 'pop' or 'eol_pop' rule. It appears multiple 'pop's are imported from other contexts.");
+                    return null;
+                }
+
+                //Add the relevant set to the ILP.
+                ilp.Add(popsFound[0]);
             }
             if (ilp.ContainsSetOfType("pop") && ilp.ContainsSetOfType("eol_pop"))
             {
@@ -629,6 +643,48 @@ namespace iro4cli.Compile
                 Patterns = ctxMems,
                 Type = ContextMemberType.InlinePush
             };
+        }
+
+        /// <summary>
+        /// Finds sets recursively of type "pop" or "eol_pop".
+        /// </summary>
+        private static List<KeyValuePair<string, IroVariable>> FindPops(IroSet set, IroSet contexts)
+        {
+            //Loop over set members, for each include find pops too.
+            var pops = new List<KeyValuePair<string, IroVariable>>();
+            foreach (var member in set)
+            {
+                if (member.Value is IroSet)
+                {
+                    //Is it a pop or eol_pop?
+                    var setMem = ((IroSet)member.Value);
+                    if (setMem.SetType == "pop" || setMem.SetType == "eol_pop")
+                    {
+                        pops.Add(member);
+                    }
+                }
+
+                //Is it an include?
+                if (member.Value is IroInclude)
+                {
+                    var include = ((IroInclude)member.Value);
+                    string includeCtx = include.Value;
+
+                    //Try and find context to evaluate.
+                    if (!contexts.ContainsKey(includeCtx) || !(contexts[includeCtx] is IroSet))
+                    {
+                        Error.Compile("Include statement references context '" + includeCtx + "', but it does not exist.");
+                        return null;
+                    }
+                    var ctx = (IroSet)contexts[includeCtx];
+
+                    //Find pops in there, add range.
+                    pops.AddRange(FindPops(ctx, contexts));
+                }
+            }
+
+            //Return list.
+            return pops;
         }
 
         /// <summary>

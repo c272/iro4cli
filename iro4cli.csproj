@@ -114,6 +114,7 @@
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>iro4cli.Grammar</CustomToolNamespace>
     </Antlr4>
+    <Compile Include="Extensions\StringExtensions.cs" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Templates\AtomResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
