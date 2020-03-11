@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -373,7 +374,7 @@ namespace iro4cli.Compile
                 {
                     //Get the string out, XML format it.
                     string regex = match.Value.Replace("<string>", "").Replace("</string>", "");
-                    regex = regex.FormatForXML();
+                    regex = SecurityElement.Escape(regex);
                     regex = "<string>" + regex + "</string>";
 
                     xmlBuilder.Remove(match.Index, match.Length);
