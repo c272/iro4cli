@@ -86,17 +86,17 @@ namespace iro4cli.Compile
             {
                 //Add the pre-existing context.
                 AddContext(ref text, context, data);
-
-                //Context done parsing, complete all queued contexts.
-                foreach (var queued in pendingContexts)
-                {
-                    AddContext(ref text, new IroContext(queued.Key)
-                    {
-                        Members = queued.Value
-                    }, data);
-                }
-                pendingContexts = new Dictionary<string, List<ContextMember>>();
             }
+
+            //Contexts done parsing, complete all queued contexts.
+            foreach (var queued in pendingContexts)
+            {
+                AddContext(ref text, new IroContext(queued.Key)
+                {
+                    Members = queued.Value
+                }, data);
+            }
+            pendingContexts = new Dictionary<string, List<ContextMember>>();
 
             //Close the textmate scopes.
             text.AppendLine("</dict>");
@@ -291,7 +291,7 @@ namespace iro4cli.Compile
             //Add the initial match.
             text.AppendLine("<dict>");
             text.AppendLine("<key>match</key>");
-            text.AppendLine("<string>" + pattern.Data + "</string>");
+            text.AppendLine("<string>" + pattern.Data.FormatForXML() + "</string>");
 
             //Only one style? Just use the 'name' property.
             if (pattern.Styles.Count == 1) 
@@ -312,7 +312,7 @@ namespace iro4cli.Compile
                     text.AppendLine("<string>" + styles[i].TextmateScope + "." + data.Name + "</string>");
                     text.AppendLine("</dict>");
                 }
-                text.AppendLine("</dict>")
+                text.AppendLine("</dict>");
             }
             text.AppendLine("</dict>");
         }
@@ -361,9 +361,6 @@ namespace iro4cli.Compile
         {
             try
             {
-                //Replace invalid XML characters.
-                xml = xml.Replace("&", "&amp;");
-
                 XDocument doc = XDocument.Parse(xml);
                 return doc.ToString();
             }
