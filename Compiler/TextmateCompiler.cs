@@ -169,7 +169,7 @@ namespace iro4cli.Compile
             text.AppendLine("<dict>");
 
             //Patterns match up with context groups?
-            if (!GroupsMatch(styles, pattern.Data))
+            if (!Compiler.GroupsMatch(pattern.Data, styles.Count))
             {
                 Error.Compile("Mismatch between capture groups and number of styles for inline push with regex '" + pattern.Data + "'.");
                 return;
@@ -239,7 +239,7 @@ namespace iro4cli.Compile
             var popStyles = GetPatternStyles(pattern.PopStyles, data);
 
             //Patterns match up with context groups?
-            if (!GroupsMatch(popStyles, pattern.PopData))
+            if (!Compiler.GroupsMatch(pattern.Data, styles.Count))
             {
                 Error.Compile("Mismatch between capture groups and number of styles for pop with regex '" + pattern.PopData + "'.");
                 return;
@@ -282,7 +282,7 @@ namespace iro4cli.Compile
 
             //Is the amount of patterns equal to the amount of context groups?
             //Use a hack of replacing bracket groups with normal letters.
-            if (!GroupsMatch(styles, pattern.Data))
+            if (!Compiler.GroupsMatch(pattern.Data, styles.Count))
             {
                 Error.Compile("Mismatch between capture groups and number of styles for pattern with regex '" + pattern.Data + "'.");
                 return;
@@ -312,6 +312,7 @@ namespace iro4cli.Compile
                     text.AppendLine("<string>" + styles[i].TextmateScope + "." + data.Name + "</string>");
                     text.AppendLine("</dict>");
                 }
+                text.AppendLine("</dict>")
             }
             text.AppendLine("</dict>");
         }
@@ -352,17 +353,7 @@ namespace iro4cli.Compile
 
             return styles;
         }
-
-        /// <summary>
-        /// Determines whether the capture groups in the given data match the styles list.
-        /// </summary>
-        public bool GroupsMatch(List<IroStyle> styles, string data)
-        {
-            string withoutGroups = Regex.Replace(data, "\\(([^()]+)\\)", "x");
-            int groupAmt = withoutGroups.Split('|').Length;
-            return (groupAmt == styles.Count);
-        }
-
+        
         /// <summary>
         /// Formats a given string into pretty print XML.
         /// </summary>

@@ -53,7 +53,7 @@ constant_ref: REF_SYM REF_SYM SET_OPEN IDENTIFIER SET_CLOSE;
  */
 
 //Regular expression.
-REGEX: L_BRACKET (~[()\n\r] | '\\(' | '\\)' | REGEX)* R_BRACKET;
+REGEX: L_BRACKET (~[()\n\r] | '\\(' | '\\)' | REGEX)* R_BRACKET '|'? REGEX?;
 
 //Reserved words.
 INCLUDE: 'include';

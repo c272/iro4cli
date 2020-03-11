@@ -130,7 +130,7 @@ namespace iro4cli
                 var styles = GetPatternStyles(pattern.Styles, data);
 
                 //Check if the groups match.
-                if (!GroupsMatch(styles, pattern.Data))
+                if (!Compiler.GroupsMatch(pattern.Data, styles.Count))
                 {
                     Error.Compile("Amount of capture groups does not line up with the amount of assigned styles.");
                     return;
@@ -222,7 +222,7 @@ namespace iro4cli
                 var popStyles = GetPatternStyles(ilp.PopStyles, data);
 
                 //Patterns match up with context groups?
-                if (!GroupsMatch(popStyles, ilp.PopData))
+                if (!Compiler.GroupsMatch(ilp.PopData, popStyles.Count))
                 {
                     Error.Compile("Mismatch between capture groups and number of styles for pop with regex '" + ilp.PopData + "'.");
                     return;
@@ -257,16 +257,6 @@ namespace iro4cli
         private void QueueContext(string helperName, List<ContextMember> patterns)
         {
             queuedContexts.Add(helperName, patterns);
-        }
-
-        /// <summary>
-        /// Determines whether the capture groups in the given data match the styles list.
-        /// </summary>
-        public bool GroupsMatch(List<IroStyle> styles, string data)
-        {
-            string withoutGroups = Regex.Replace(data, "\\(([^()]+)\\)", "x");
-            int groupAmt = withoutGroups.Split('|').Length;
-            return (groupAmt == styles.Count);
         }
 
         /// <summary>
