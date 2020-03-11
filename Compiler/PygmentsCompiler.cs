@@ -26,9 +26,10 @@ namespace iro4cli
             //Name with capital first letter, aliases.
             text.AppendLine("name = '" + data.Name[0].ToString().ToUpper() + data.Name.Substring(1) + "'");
             text.AppendLine("aliases = ['" + data.Name + "']");
-            
+
             //File names.
             //todo
+            return null;
         }
     }
 

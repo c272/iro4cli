@@ -11,6 +11,32 @@ namespace iro4cli.Compile
     {
         //The variables currently being compiled.
         public static Dictionary<string, IroVariable> Variables;
+        
+        /// <summary>
+        /// Checks whether the amount of groups from a regex string is the same as expected.
+        /// </summary>
+        public static bool GroupsMatch(string data, int expectedGroups)
+        {
+            //Get groups out, ignoring escape chars.
+            int realGroups = 0;
+            bool ignoreNext = false, inCharSet = false;
+            foreach (var c in data)
+            {
+                //Ignore escape chars.
+                if (c == '\\') { ignoreNext = true; continue; }
+                if (ignoreNext) { ignoreNext = false; continue; }
+
+                //Ignore character sets.
+                if (c == '[') { inCharSet = true; }
+                if (c == ']') { inCharSet = false; }
+                if (inCharSet) { continue; }
+
+                if (c == '(') { realGroups++; }
+            }
+
+            //Return equality.
+            return (expectedGroups == realGroups);
+        }
 
         /// <summary>
         /// Compiles a set of Algo variables given targets.
