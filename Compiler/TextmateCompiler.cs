@@ -368,18 +368,24 @@ namespace iro4cli.Compile
                 string indentedXml = doc.ToString();
                 var xmlBuilder = new StringBuilder(indentedXml);
 
-                ////Try to format the Regex strings.
-                //var matches = Regex.Matches(indentedXml, "<string>[^\r\n]*</string>");
-                //foreach (Match match in matches)
-                //{
-                //    //Get the string out, XML format it.
-                //    string regex = Regex.Replace(match.Value, "<string>|</string>", "");
-                //    regex = SecurityElement.Escape(regex);
-                //    regex = "<string>" + regex + "</string>";
+                //Try to format the Regex strings.
+                var matches = Regex.Matches(indentedXml, "<string>[^\r\n]*</string>");
+                int currentDifferential = 0;
+                foreach (Match match in matches)
+                {
+                    //Get the string out, XML format it.
+                    string regex = Regex.Replace(match.Value, "<string>|</string>", "");
+                    regex = SecurityElement.Escape(regex);
+                    regex = "<string>" + regex + "</string>";
 
-                //    xmlBuilder.Remove(match.Index, match.Length);
-                //    xmlBuilder.Insert(match.Index, regex);
-                //}
+                    //Insert new.
+                    xmlBuilder.Remove(match.Index + currentDifferential, match.Length);
+                    xmlBuilder.Insert(match.Index + currentDifferential, regex);
+
+                    //Update the differential.
+                    //Previous inserts may have changed the index, so this variable compensates.
+                    currentDifferential += regex.Length - match.Length;
+                }
 
                 //Return the XML.
                 return xmlBuilder.ToString();
