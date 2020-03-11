@@ -578,7 +578,7 @@ namespace iro4cli.Compile
                 }
 
                 //styles
-                foreach (var style in ((IroList)ilp["styles"]))
+                foreach (var style in ((IroList)pop["styles"]))
                 {
                     if (!(style is IroValue))
                     {
