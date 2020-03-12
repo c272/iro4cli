@@ -28,7 +28,7 @@ namespace iro4cli
             text.AppendLine("aliases = ['" + data.Name + "']");
 
             //File names.
-            //todo
+            //
             return null;
         }
     }
