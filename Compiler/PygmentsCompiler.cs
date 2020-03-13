@@ -28,7 +28,24 @@ namespace iro4cli
             text.AppendLine("aliases = ['" + data.Name + "']");
 
             //File names.
-            //
+            string fNames = "[";
+            foreach (var ext in data.FileExtensions)
+            {
+                fNames += "'" + ext + "', ";
+            }
+            fNames = fNames.Trim(',') + "]";
+            text.AppendLine(fNames);
+            
+            //Template flags.
+            text.AppendLine("flags = re.MULTILINE | re.UNICODE");
+            text.AppendLine("");
+            
+            //Open the tokens map.
+            text.AppendLine("tokens = {");
+            text.TabIn();
+            //todo
+            text.TabOut();
+            
             return null;
         }
     }
