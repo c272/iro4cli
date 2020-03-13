@@ -58,7 +58,7 @@ So far the following targets have been implemented:
 - [x] CSS
 - [x] Ace
 - [x] Atom
-- [ ] Pygments
+- [x] Pygments
 - [ ] Rouge
 
 *Feature parity with Iro online here. Additional goals below.*
