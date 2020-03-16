@@ -60,6 +60,7 @@ So far the following targets have been implemented:
 - [x] Atom
 - [x] Pygments
 - [ ] Rouge
+- [ ] Sublime 3
 
 *Feature parity with Iro online here. Additional goals below.*
 
