@@ -66,5 +66,6 @@ So far the following targets have been implemented:
 
 - [x] VSCode Extension Generation
 - [x] Atom Package Generation
+- [ ] Sublime Extension Generation
 - [ ] HighlightJS
 - [ ] ANTLR Input
