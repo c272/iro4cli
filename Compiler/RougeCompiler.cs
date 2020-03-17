@@ -12,7 +12,7 @@ namespace iro4cli
     public class RougeCompiler : ICompileTarget
     {
         //Contexts that are queued to generate.
-        public Dictionary<string, InlinePushContextMember> queuedContexts = new Dictionary<string, InlinePushContextMember>();
+        public Dictionary<Tuple<string, string>, InlinePushContextMember> queuedContexts = new Dictionary<Tuple<string, string>, InlinePushContextMember>();
 
         /// <summary>
         /// Turns Iro precompile data into a compiled Rouge target.
@@ -53,20 +53,11 @@ namespace iro4cli
             }
             AddContext(mainCtx, "root", data, ref text);
 
-            //Loop over all other contexts, create.
-            foreach (var ctx in data.Contexts)
-            {
-                //Already did main.
-                if (ctx.Name == "main") { continue; }
-
-                AddContext(mainCtx, ctx.Name, data, ref text);
-            }
-
             //Add all the queued helpers.
             while (queuedContexts.Count != 0)
             {
                 var item = queuedContexts.ElementAt(0);
-                AddILPContext(item.Key, item.Value, data, ref text);
+                AddILPContext(item.Key.Item1, item.Key.Item2, item.Value, data, ref text);
                 queuedContexts.Remove(item.Key);
             }
 
@@ -96,7 +87,7 @@ namespace iro4cli
             //Loop over rules, add them.
             foreach (var member in ctx.Members)
             {
-                AddContextMember(member, data, ref text);
+                AddContextMember(member, ctx.Name, data, ref text);
             }
 
             text.TabOut();
@@ -105,7 +96,7 @@ namespace iro4cli
 
         //Adds a single context member to the text.
         List<string> includedThisRun = new List<string>();
-        private void AddContextMember(ContextMember member, IroPrecompileData data, ref RubyStringMaker text)
+        private void AddContextMember(ContextMember member, string ctxName, IroPrecompileData data, ref RubyStringMaker text)
         {
             //What type is it?
             switch (member.Type)
@@ -155,12 +146,20 @@ namespace iro4cli
 
                     //Inline push pattern.
                     var ilp = (InlinePushContextMember)member;
-                    string ruleIlp = "rule /";
-                    ruleIlp += ilp.Data + "/, ";
+                    string ruleIlp = "rule /" + ilp.Data + "/";
 
                     //Get styles for pattern. Do they match up?
                     var pushStyles = GetPatternStyles(ilp.Styles, data);
                     string helperName = "helper_" + ShortId.Generate(7);
+
+                    //Is the helper already made?
+                    var madeHelper = queuedContexts.FirstOrDefault(x => x.Key.Item1 == ctxName && x.Value.Data == ilp.Data);
+                    if (madeHelper.Key != null)
+                    {
+                        //Already made a helper, set the name.
+                        helperName = madeHelper.Key.Item2;
+                    }
+
                     if (pushStyles.Count > 1)
                     {
                         //Grouped.
@@ -197,8 +196,11 @@ namespace iro4cli
                         return;
                     }
 
-                    //Queue the push scope.
-                    QueueILPScope(helperName, ilp);
+                    //Queue the push scope if not already pushed.
+                    if (madeHelper.Key == null)
+                    {
+                        QueueILPScope(ctxName, helperName, ilp);
+                    }
                     break;
 
                 case ContextMemberType.Include:
@@ -218,84 +220,69 @@ namespace iro4cli
                     includedThisRun.Add(member.Data);
                     foreach (var mem in ctx.Members)
                     {
-                        AddContextMember(mem, data, ref text);
+                        AddContextMember(mem, ctxName, data, ref text);
                     }
-                    break;
-
-                //A simple pop rule.
-                case ContextMemberType.Pop:
-                    //Inline push pattern.
-                    var pop = (PatternContextMember)member;
-                    string rulePop = "rule /";
-                    rulePop += pop.Data + "/, ";
-
-                    //Get styles for pattern. Do they match up?
-                    var popStyles = GetPatternStyles(pop.Styles, data);
-                    if (popStyles.Count > 1)
-                    {
-                        //Grouped.
-                        rulePop += " do";
-                        text.AppendLine(rulePop);
-                        text.TabIn();
-
-                        ruleIlp = "groups ";
-
-                        foreach (var style in popStyles)
-                        {
-                            ruleIlp += style.PygmentsScope.Replace(".", "::") + ", ";
-                        }
-
-                        ruleIlp = ruleIlp.TrimEnd(' ', ',');
-                        text.AppendLine(ruleIlp);
-
-                        //Add the pop.
-                        ruleIlp = "push :pop!";
-
-                        //Tab out, end.
-                        text.TabOut();
-                        text.AppendLine("end");
-                    }
-                    else if (popStyles.Count != 0)
-                    {
-                        //Ungrouped.
-                        rulePop += ", " + popStyles[0].PygmentsScope.Replace(".", "::") + ", :pop!";
-                        text.AppendLine(rulePop);
-                    }
-                    else
-                    {
-                        Error.Compile("No styles given for rule '" + pop.Data + "'.");
-                        return;
-                    }
-
                     break;
             }
         }
 
         //Queues an inline push scope to be generated.
-        private void QueueILPScope(string helperName, InlinePushContextMember ilp)
+        private void QueueILPScope(string ctx, string helperName, InlinePushContextMember ilp)
         {
-            queuedContexts.Add(helperName, ilp);
+            queuedContexts.Add(new Tuple<string, string>(ctx, helperName), ilp);
         }
 
         //Adds an inline push context member.
-        private void AddILPContext(string name, InlinePushContextMember mem, IroPrecompileData data, ref RubyStringMaker text)
+        private void AddILPContext(string ctxName, string name, InlinePushContextMember mem, IroPrecompileData data, ref RubyStringMaker text)
         {
-            //Create a pop.
-            var pop = new PatternContextMember()
-            {
-                Data = mem.PopData,
-                Styles = mem.Styles,
-                Type = ContextMemberType.Pop
-            };
-            var members = new List<ContextMember>(mem.Patterns);
-            members.Add(pop);
+            //Create the rule, reset includes.
+            includedThisRun = new List<string>();
+            text.AppendLine("state:" + name);
+            text.TabIn();
 
-            //Add the context.
-            AddContext(new IroContext(name)
+            //Add the pop rule.
+            string popRule = "rule /" + mem.PopData + "/";
+            var styles = GetPatternStyles(mem.PopStyles, data);
+            if (styles.Count > 1)
             {
-                Members = members,
-                Name = name
-            }, name, data, ref text);
+                //Append.
+                popRule += " do";
+                text.AppendLine(popRule);
+                text.TabIn();
+
+                //Newline with groups.
+                popRule = "groups ";
+                foreach (var scope in styles)
+                {
+                    popRule += scope.PygmentsScope.Replace(".", "::") + ", ";
+                }
+                popRule = popRule.TrimEnd(' ', ',');
+                text.AppendLine(popRule);
+                text.AppendLine("push :pop!");
+
+                text.TabOut();
+                text.AppendLine("end");
+            }
+            else if (styles.Count == 1)
+            {
+                //Single style.
+                popRule += ", " + styles[0].PygmentsScope.Replace(".", "::") + ", :pop!";
+                text.AppendLine(popRule);
+            }
+            else
+            {
+                Error.Compile("No pop styles included for pop rule '" + mem.PopData + "'.");
+                return;
+            }
+
+            //Loop over rules, add them.
+            foreach (var member in mem.Patterns)
+            {
+                AddContextMember(member, ctxName, data, ref text);
+            }
+
+            text.TabOut();
+            text.AppendLine("end");
         }
 
         /// <summary>
