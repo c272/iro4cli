@@ -59,7 +59,7 @@ So far the following targets have been implemented:
 - [x] Ace
 - [x] Atom
 - [x] Pygments
-- [ ] Rouge
+- [x] Rouge
 - [ ] Sublime 3
 
 *Feature parity with Iro online here. Additional goals below.*
