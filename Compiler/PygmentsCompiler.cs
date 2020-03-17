@@ -200,6 +200,7 @@ namespace iro4cli
             text.AppendLine("(u'" + ilp.PopData.Replace("\\", "\\\\") + "', byGroups(" + string.Join(", ", popStyles.Select(x => x.PygmentsScope)).TrimEnd(',', ' ') + "), '" + originalCtx + "')");
 
             //Add context members.
+            includedThisRun = new List<string>();
             foreach (var member in ilp.Patterns)
             {
                 AddContextMember(name, member, data, ref text);
