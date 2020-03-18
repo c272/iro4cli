@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using iro4cli.Compile;
 using CommandLine;
 using iro4cli.CLI;
+using iro4cli.Templates;
+using System.Reflection;
 
 namespace iro4cli
 {
@@ -14,6 +16,13 @@ namespace iro4cli
     {
         static void Main(string[] args)
         {
+            //Args just "--version"? Display version.
+            if (args.Length == 1 && args[0] == "--version")
+            {
+                PrintVersionInfo();
+                return;
+            }
+
             //Disable help writer.
             var parser = new Parser(config => config.HelpWriter = null);
 
@@ -21,6 +30,14 @@ namespace iro4cli
             parser.ParseArguments<IroCLIOptions>(args)
                           .WithParsed(Run)
                           .WithNotParsed(HandleParseError);
+        }
+
+        //Prints version info and a nice little text banner to console.
+        private static void PrintVersionInfo()
+        {
+            Console.WriteLine(Resources.asciiArt);
+            Console.WriteLine("                 v" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            Console.WriteLine("\niro4cli (c) C272, 2020. Iro (c) Chris Ainsley.\n");
         }
 
         //Called when an error has occured parsing the command line options.
@@ -63,12 +80,14 @@ namespace iro4cli
             var compileResults = Compiler.Compile(vars, targets.ToArray());
             foreach (var result in compileResults)
             {
+                //Yay, successfully generated!
                 Console.Write("Successfully generated for target '");
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write(result.Target.ToString().Replace("Target.", ""));
                 Console.ResetColor();
                 Console.Write("'.\r\n");
 
+                //Try to write the file now (with the right file extension).
                 string ext = ".unknown";
                 switch (result.Target)
                 {
@@ -98,7 +117,7 @@ namespace iro4cli
                 }
 
                 //todo: add a directory value
-                WriteFile(result.GeneratedFile, ((IroValue)vars["name"]).Value, ext, null);
+                WriteFile(result.GeneratedFile, ((IroValue)vars["name"]).Value, ext, opts.OutputPath);
             }
         }
 

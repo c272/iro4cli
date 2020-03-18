@@ -19,7 +19,7 @@ namespace iro4cli.Templates {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -69,6 +69,18 @@ namespace iro4cli.Templates {
         internal static string _vscodeignore {
             get {
                 return ResourceManager.GetString("_vscodeignore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _ ___  __    _  _     ____   _  
+        ///| | _ \/__\  | || |   / _/ | | | 
+        ///| | v / \/ | `._  _| | \_| |_| | 
+        ///|_|_|_\\__/     |_|   \__/___|_|.
+        /// </summary>
+        internal static string asciiArt {
+            get {
+                return ResourceManager.GetString("asciiArt", resourceCulture);
             }
         }
         
@@ -134,7 +146,7 @@ namespace iro4cli.Templates {
         ///
         ///\!\[feature X\]\(images/feature-x.png\)
         ///
-        ///&gt; Tip: Many popular extensio [rest of string was truncated]&quot;;.
+        ///&gt; Tip: Many popu [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string README_md {
             get {
@@ -150,7 +162,7 @@ namespace iro4cli.Templates {
         ///* This folder contains all of the files necessary for your extension.
         ///* `package.json` - this is the manifest file in which you declare your language support and define the location of the grammar file that has been copied into your extension.
         ///* `syntaxes/test.tmlanguage.txt` - this is the Text mate grammar file that is used for tokenization.
-        ///* `language-configuration.json` - this is the language configuration, defining the tokens that are used f [rest of string was truncated]&quot;;.
+        ///* `language-configuration.json` - this is the language configuration, defining the tokens that are [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vsc_extension_quickstart_md {
             get {

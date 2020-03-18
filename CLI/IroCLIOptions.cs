@@ -19,6 +19,18 @@ namespace iro4cli.CLI
         public string File { get; set; }
 
         /// <summary>
+        /// Displays the version header when isolated.
+        /// </summary>
+        [Option("version", Default = false, HelpText = "Shows the version information for this build of Iro.")]
+        public bool ShowVersionHeader { get; set; }
+
+        /// <summary>
+        /// The output directory to generate into.
+        /// </summary>
+        [Option('o', "output", Default = null, HelpText = "Sets the folder to output results into.")]
+        public string OutputPath { get; set; }
+
+        /// <summary>
         /// Whether to generate textmate grammars or not.
         /// </summary>
         [Option('t', "textmate", Default = false, HelpText = "Generates a textmate grammar file.")]

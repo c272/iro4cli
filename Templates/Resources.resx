@@ -259,4 +259,10 @@ Added features X, Y, and Z.
 .gitignore
 vsc-extension-quickstart.md</value>
   </data>
+  <data name="asciiArt" xml:space="preserve">
+    <value>_ ___  __    _  _     ____   _  
+| | _ \/__\  | || |   / _/ | | | 
+| | v / \/ | `._  _| | \_| |_| | 
+|_|_|_\\__/     |_|   \__/___|_|</value>
+  </data>
 </root>
