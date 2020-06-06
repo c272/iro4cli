@@ -40,7 +40,10 @@ mkbundle -o iro --simple bin/Debug/iro.exe --machine-config /etc/mono/4.5/machin
 ```
 
 ## Usage
-An example grammar is something like the following:
+For all command line options available, see the following Wiki page:
+https://github.com/c272/iro4cli/wiki/Command-Line-Options
+
+For Iro grammars, an example grammar is something like the following:
 ```
 name = exampleGram
 file_extensions [] = exgr, exg;
@@ -51,6 +54,7 @@ styles [] {
     }
 }
 ```
+I highly suggest you check the [official documentation](http://eeyo.io/iro/documentation) for more details, however.
 
 ## Progress
 So far the following targets have been implemented:
