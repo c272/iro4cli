@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\Larry\Files\Programming\iro4cli\Grammar\iro.g4 by ANTLR 4.6.6
+// Generated from C:\Files\Programming\iro4cli\Grammar\iro.g4 by ANTLR 4.6.6
 
 // Unreachable code detected
 #pragma warning disable 0162

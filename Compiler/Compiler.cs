@@ -20,8 +20,11 @@ namespace iro4cli.Compile
             //Get groups out, ignoring escape chars.
             int realGroups = 0;
             bool ignoreNext = false, inCharSet = false;
-            foreach (var c in data)
+            for (int i=0; i<data.Length; i++)
             {
+                //Get current character.
+                char c = data[i];
+                
                 //Ignore escape chars.
                 if (c == '\\') { ignoreNext = true; continue; }
                 if (ignoreNext) { ignoreNext = false; continue; }
@@ -31,7 +34,17 @@ namespace iro4cli.Compile
                 if (c == ']') { inCharSet = false; }
                 if (inCharSet) { continue; }
 
-                if (c == '(') { realGroups++; }
+                //If there's an open bracket, this might be a group.
+                if (c == '(') 
+                { 
+                    //Is this a lookahead/lookbehind?
+                    if (i<data.Length-1 && data[i+1] == '?')
+                    {
+                        //Yes, ignore.
+                        continue;
+                    }
+                    realGroups++; 
+                }
             }
 
             //Return equality.
