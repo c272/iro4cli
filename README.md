@@ -23,24 +23,15 @@ iro grammarFile.iro --vscode --atomext
 To use the online **official** version of Iro, you can go to the [official website](http://eeyo.io/iro). For documentation on how to create Iro grammars, check the official documentation [here](http://eeyo.io/iro/documentation).
 
 ## Getting Started
-To get started using Iro4CLI on Windows, all you'll need is .NET Framework 4.7.1 or later, and you can download one of the prebuilt binaries from the [Releases tab](https://github.com/c272/iro4cli/releases) on the main repository page.
+To get started using iro4cli, you can use one of the provided prebuilt binaries from the [Releases tab](https://github.com/c272/iro4cli/releases) on the main repository page. If one of these is not available for your chosen operating system or distribution, then you can follow the build steps below.
 
-If you're using Linux, however, you'll have to build the project using Mono and `mkbundle`. Make sure you have the following dependencies installed as a nuget packages before attempting to build with `mkbundle`:
-
- - `Antlr4`
- - `Antlr4.CodeGeneration`
- - `Antlr4.Runtime`
- - `CommandLineParser`
- - `Newtonsoft.Json`
- - `shortid`
-
-Once this is done, you can use a simple `mkbundle` command such as the example below to create a native executable for your distro:
-```bash
-mkbundle -o iro --simple bin/Debug/iro.exe --machine-config /etc/mono/4.5/machine.config --no-config --nodeps bin/Debug/*.dll
+To build, ensure you have the .NET 6.0 SDK installed (`dotnet-sdk-6.0` on `apt` for Ubuntu/Debian users). **You will also need to install the Antlr4 v4.7.2 command line tool, and ensure it is available on PATH.** Installing a newer version of the ANTLR4 command line tool or having it unavailable on PATH will result in a build error. Once these prerequisites are installed, simply run the following after cloning the repository:
+```
+dotnet build
 ```
 
 ## Usage
-For all command line options available, see the following Wiki page:
+For all command line options available, simply run `iro --help`, or see the following Wiki page:
 https://github.com/c272/iro4cli/wiki/Command-Line-Options
 
 For Iro grammars, an example grammar is something like the following:
