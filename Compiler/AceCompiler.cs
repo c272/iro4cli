@@ -12,7 +12,7 @@ namespace iro4cli
     /// </summary>
     public class AceCompiler : ICompileTarget
     {
-        //Queued contexts to be created.
+        //Queued contexts to be created, and the contexts created.
         private Dictionary<string, InlinePushContextMember> queuedContexts = new Dictionary<string, InlinePushContextMember>();
         private Dictionary<Tuple<string, string>, string> contextsCreated = new Dictionary<Tuple<string, string>, string>();
 
@@ -278,6 +278,9 @@ namespace iro4cli
     /// </summary>
     public static class StringBuilderExtensions
     {
+        /// <summary>
+        /// Trims the end of a StringBuilder's string, stopping when encountering something other than the given character 'c'.
+        /// </summary>
         public static StringBuilder TrimEnd(this StringBuilder sb, char c)
         {
             if (sb == null || sb.Length == 0) return sb;

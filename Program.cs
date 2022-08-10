@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using iro4cli.Compile;
 using CommandLine;
+using CommandLine.Text;
 using iro4cli.CLI;
 using iro4cli.Templates;
 using System.Reflection;
@@ -27,23 +28,41 @@ namespace iro4cli
             var parser = new Parser(config => config.HelpWriter = null);
 
             //Get the command line options out.
-            parser.ParseArguments<IroCLIOptions>(args)
-                          .WithParsed(Run)
-                          .WithNotParsed(HandleParseError);
+            var parserResult = parser.ParseArguments<IroCLIOptions>(args)
+                                    .WithParsed(Run);
+
+            //Generate help based on parse result.
+            var helpText = HelpText.AutoBuild(parserResult, h =>
+            {
+                h.Heading = Resources.asciiArt;
+                h.Copyright = "\niro4cli (c) C272, 2020. Iro (c) Chris Ainsley.";
+                return h;
+            }, e => e);
+
+            //Display help if not parsed.
+            parserResult.WithNotParsed(errs => HandleParseError(helpText, errs));
         }
 
         //Prints version info and a nice little text banner to console.
         private static void PrintVersionInfo()
         {
             Console.WriteLine(Resources.asciiArt);
-            Console.WriteLine("                 v" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            Console.WriteLine($"v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}".PadLeft(52, ' '));
             Console.WriteLine("\niro4cli (c) C272, 2020. Iro (c) Chris Ainsley.\n");
         }
 
         //Called when an error has occured parsing the command line options.
-        private static void HandleParseError(IEnumerable<CommandLine.Error> errors)
+        private static void HandleParseError(HelpText helpText, IEnumerable<CommandLine.Error> errors)
         {
-            Error.CommandLine("Invalid command line options, must include an Iro file to parse in position 0.");
+            //If it's a help request, then actually just display the help.
+            if (errors.First()?.Tag == ErrorType.HelpRequestedError)
+            {
+                Console.WriteLine(helpText.ToString());
+                return;
+            }
+
+            //Show the error help.
+            Error.CommandLine(helpText.ToString());
         }
 
         //When the command line options have been successfully parsed, this is run.
@@ -62,6 +81,10 @@ namespace iro4cli
             if (opts.GeneratePygments) { targets.Add(new PygmentsCompiler()); } //pygments
             if (opts.GenerateRouge) { targets.Add(new RougeCompiler()); } //rouge
             if (opts.GenerateSublime3) { targets.Add(new Sublime3Compiler()); } //sublime3
+
+            //Set output directory to current directory, if none supplied.
+            if (opts.OutputPath == null)
+                opts.OutputPath = Environment.CurrentDirectory;
 
             //Attempt to read the Iro grammar.
             string iroGrammar;
@@ -96,7 +119,7 @@ namespace iro4cli
                         ext = ".cson";
                         if (opts.GenerateAtomExtension)
                         {
-                            AtomCompiler.MakeAtomExtension(((IroValue)vars["name"]).Value, result.GeneratedFile, Environment.CurrentDirectory);
+                            AtomCompiler.MakeAtomExtension(((IroValue)vars["name"]).Value, result.GeneratedFile, opts.OutputPath);
                         }
                         break;
                     case Target.CSS: ext = ".css"; break;
@@ -108,7 +131,7 @@ namespace iro4cli
                         if (opts.GenerateVSCodeExtension)
                         {
                             //Write a VSCode extension to file.
-                            TextmateCompiler.WriteVSCExtension(result.GeneratedFile, Environment.CurrentDirectory, vars);
+                            TextmateCompiler.WriteVSCExtension(result.GeneratedFile, opts.OutputPath, vars);
                         }
                         break;
                     default:
@@ -116,7 +139,7 @@ namespace iro4cli
                         continue;
                 }
 
-                //todo: add a directory value
+                //Output the generated result.
                 WriteFile(result.GeneratedFile, ((IroValue)vars["name"]).Value, ext, opts.OutputPath);
             }
         }
@@ -128,9 +151,7 @@ namespace iro4cli
         {
             //Default to the current directory.
             if (directory == null)
-            {
                 directory = Environment.CurrentDirectory;
-            }
 
             //Generate a file path.
             string filePath = Path.Combine(directory, projectName + ext);

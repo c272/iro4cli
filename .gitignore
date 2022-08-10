@@ -19,6 +19,7 @@ x86/
 bld/
 [Bb]in/
 [Ll]og/
+[Oo]bj/
 
 # Unsavoury file formats.
 *.pdb
@@ -28,6 +29,9 @@ TemporaryGeneratedFile*.cs
 *.csproj.CopyComplete
 *.csproj.Antlr4*
 
+# Non-G4 grammar files.
+Grammar/*
+!Grammar/*.g4
 
 # Visual Studio 2015 cache/options directory
 .vs/

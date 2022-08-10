@@ -20,6 +20,7 @@ namespace iro4cli
             Variables.Add(name, var);
         }
 
+        //Returns whether a variable exists in the variables dictionary.
         public static Func<string, bool> VariableExists = (string name) => Variables.ContainsKey(name);
     }
 

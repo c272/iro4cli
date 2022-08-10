@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace iro4cli.Compile
 {
     /// <summary>
-    /// A single result from a compiler.
+    /// A single output result from an Iro compiler.
     /// </summary>
     public class CompileResult
     {
@@ -15,6 +15,9 @@ namespace iro4cli.Compile
         public string GeneratedFile;
     }
 
+    /// <summary>
+    /// Represents a single output target for the Iro compiler.
+    /// </summary>
     public enum Target
     {
         Textmate,

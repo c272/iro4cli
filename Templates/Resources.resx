@@ -260,9 +260,15 @@ Added features X, Y, and Z.
 vsc-extension-quickstart.md</value>
   </data>
   <data name="asciiArt" xml:space="preserve">
-    <value>_ ___  __    _  _     ____   _  
-| | _ \/__\  | || |   / _/ | | | 
-| | v / \/ | `._  _| | \_| |_| | 
-|_|_|_\\__/     |_|   \__/___|_|</value>
+    <value>                                                   
+  db                                     `7MM    db  
+                                           MM        
+ 7MM   7Mb,od8 ,pW"Wq.       ,AM   ,p6"bo  MM   7MM  
+  MM    MM' "'6W'   `Wb     AVMM  6M'  OO  MM    MM  
+  MM    MM    8M     M8   ,W' MM  8M       MM    MM  
+  MM    MM    YA.   ,A9 ,W'   MM  YM.    , MM    MM  
+.JMML..JMML.   `Ybmd9'  AmmmmmMMmm YMbmd'.JMML..JMML.
+                              MM                     
+                              MM                     </value>
   </data>
 </root>

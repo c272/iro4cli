@@ -1,144 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\Antlr4.CodeGenerator.4.6.6\build\Antlr4.CodeGenerator.props" Condition="Exists('packages\Antlr4.CodeGenerator.4.6.6\build\Antlr4.CodeGenerator.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BE5104B5-CEF4-4F06-A091-059E6F44A92D}</ProjectGuid>
+    <TargetFramework>net6.0</TargetFramework>
     <OutputType>Exe</OutputType>
-    <RootNamespace>iro4cli</RootNamespace>
     <AssemblyName>iro</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>7.1</LangVersion>
+    <Deterministic>false</Deterministic>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="CommandLine, Version=2.7.82.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
-      <HintPath>packages\CommandLineParser.2.7.82\lib\net461\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="shortid, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\shortid.2.0.0\lib\net45\shortid.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Compiler\AceCompiler.cs" />
-    <Compile Include="Compiler\AtomCompiler.cs" />
-    <Compile Include="CLI\IroCLIOptions.cs" />
-    <Compile Include="Compiler\CSSCompiler.cs" />
-    <Compile Include="Data Structures\Compilation\VSCEData.cs" />
-    <Compile Include="Data Structures\Compilation\VSCELanguageConfiguration.cs" />
-    <Compile Include="Debug\ANTLRDebug.cs" />
-    <Compile Include="Compiler\Compiler.cs" />
-    <Compile Include="Compiler\TextmateCompiler.cs" />
-    <Compile Include="Data Structures\Compilation\CompileResult.cs" />
-    <Compile Include="Data Structures\Compilation\IroCompileTarget.cs" />
-    <Compile Include="Data Structures\Compilation\IroContext.cs" />
-    <Compile Include="Data Structures\Compilation\IroPrecompileData.cs" />
-    <Compile Include="Data Structures\Compilation\IroStyle.cs" />
-    <Compile Include="Data Structures\Parsing\IroAttribute.cs" />
-    <Compile Include="Data Structures\Parsing\IroInclude.cs" />
-    <Compile Include="Data Structures\Parsing\IroList.cs" />
-    <Compile Include="Data Structures\Parsing\IroReference.cs" />
-    <Compile Include="Data Structures\Parsing\IroScope.cs" />
-    <Compile Include="Data Structures\Parsing\IroSet.cs" />
-    <Compile Include="Data Structures\Parsing\IroValues.cs" />
-    <Compile Include="Emulator.cs" />
-    <Compile Include="Debug\Error.cs" />
-    <Compile Include="Grammar\iro.g4.lexer.cs">
-      <DependentUpon>iro.g4</DependentUpon>
-    </Compile>
-    <Compile Include="Grammar\iro.g4.parser.cs">
-      <DependentUpon>iro.g4</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Compiler\PygmentsCompiler.cs" />
-    <Compile Include="Compiler\RougeCompiler.cs" />
-    <Compile Include="Compiler\Sublime3Compiler.cs" />
-    <Compile Include="Templates\AtomResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AtomResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Templates\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Visitors\MainVisitor.cs" />
-    <Compile Include="Visitors\SetVisitor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include=".travis.yml">
+    <None Update=".travis.yml">
       <Generator>ResXFileCodeGenerator</Generator>
     </None>
-    <None Include="App.config" />
-    <Antlr4 Include="Grammar\iro.g4">
-      <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace>iro4cli.Grammar</CustomToolNamespace>
-    </Antlr4>
-    <None Include="packages.config" />
-    <EmbeddedResource Include="Templates\AtomResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AtomResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Visitors\AttributeVisitor.cs" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="shortid" Version="2.0.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
+  <PropertyGroup>
+    <PreBuildEvent>antlr4 -Dlanguage=CSharp -no-listener -visitor $(MSBuildProjectDirectory)/Grammar/iro.g4</PreBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Visitors\IncludeVisitor.cs" />
+    <Compile Remove="Data Structures/IroAttribute.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\Antlr4.CodeGenerator.4.6.6\build\Antlr4.CodeGenerator.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Antlr4.CodeGenerator.4.6.6\build\Antlr4.CodeGenerator.props'))" />
-    <Error Condition="!Exists('packages\Antlr4.CodeGenerator.4.6.6\build\Antlr4.CodeGenerator.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Antlr4.CodeGenerator.4.6.6\build\Antlr4.CodeGenerator.targets'))" />
-  </Target>
-  <Import Project="packages\Antlr4.CodeGenerator.4.6.6\build\Antlr4.CodeGenerator.targets" Condition="Exists('packages\Antlr4.CodeGenerator.4.6.6\build\Antlr4.CodeGenerator.targets')" />
 </Project>

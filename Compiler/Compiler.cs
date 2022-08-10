@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace iro4cli.Compile
 {
+    /// <summary>
+    /// The top level compiler for Iro. Processes pre-compile data and starts target compilers individually.
+    /// </summary>
     public static class Compiler
     {
         //The variables currently being compiled.
@@ -122,6 +125,8 @@ namespace iro4cli.Compile
                             break;
                         case "background_colour":
                         case "background_color":
+                            thisStyle.BackgroundColour = value;
+                            break;
                         case "ace_scope":
                             thisStyle.AceScope = value;
                             break;
@@ -247,13 +252,9 @@ namespace iro4cli.Compile
             }
 
             //Parsing other top-level flags.
-            //TEXTMATE UUID
             GetTopLevelProperty("textmate_uuid", ref pcd.UUID, ref vars);
-            //DESCRIPTION
             GetTopLevelProperty("description", ref pcd.Description, ref vars);
-            //COLOUR
             GetTopLevelProperty("color", ref pcd.Colour, ref vars);
-            //BACKGROUND COLOUR
             GetTopLevelProperty("background_color", ref pcd.BackgroundColour, ref vars);
         }
         
@@ -571,7 +572,7 @@ namespace iro4cli.Compile
                     return null;
                 }
 
-                //get regex
+                //What is the regex for the pop rule?
                 if (pop["regex"] is IroReference)
                 {
                     //It's a constant, uh oh. Get it.
@@ -590,7 +591,7 @@ namespace iro4cli.Compile
                     popRegex = ((IroRegex)pop["regex"]).StringValue;
                 }
 
-                //styles
+                //Get the styles for this pop rule.
                 foreach (var style in ((IroList)pop["styles"]))
                 {
                     if (!(style is IroValue))
