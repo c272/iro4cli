@@ -1,4 +1,0 @@
-﻿language: csharp
-solution: iro4cli.sln
-before_install:
-  - sudo apt-get -y install antlr4=4.7.2-2

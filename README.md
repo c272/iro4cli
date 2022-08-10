@@ -29,6 +29,7 @@ To build, ensure you have the .NET 6.0 SDK installed (`dotnet-sdk-6.0` on `apt` 
 ```
 dotnet build
 ```
+You may need to run `dotnet build` twice for it to compile properly.
 
 ## Usage
 For all command line options available, simply run `iro --help`, or see the following Wiki page:
