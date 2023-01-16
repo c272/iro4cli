@@ -1,7 +1,7 @@
 <div align="center">
 <img src="https://github.com/c272/iro4cli/raw/master/logo.png" width=200/>
 <br>
-<img src="https://img.shields.io/github/issues/c272/iro4cli"> <img src="https://img.shields.io/github/workflow/status/c272/iro4cli/dotnet.yml"> <img src="https://img.shields.io/badge/.NET-6-blue">
+<img src="https://img.shields.io/github/issues/c272/iro4cli"> <img src="https://img.shields.io/github/actions/workflow/status/c272/iro4cli/dotnet.yml"> <img src="https://img.shields.io/badge/.NET-6-blue">
 <br>
 <br>
 </div>
