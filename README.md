@@ -13,7 +13,7 @@ An open-source, CLI based rewrite of Iro by Chris Ainsley, supporting automatic 
  - Ace
  - Pygments
  - Rouge
- - Sublime 3
+ - Sublime 3 (Textmate)
  - CSS
 
 To create an Atom package and VSCode extension at the same time, you can use the following:
@@ -56,7 +56,7 @@ So far the following targets have been implemented:
 - [x] Atom
 - [x] Pygments
 - [x] Rouge
-- [ ] Sublime 3
+- [ ] `.sublime-syntax`
 
 *Feature parity with Iro online here. Additional goals below.*
 
