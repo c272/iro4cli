@@ -21,6 +21,27 @@ namespace iro4cli
     }
 
     /// <summary>
+    /// Represents a single push context member.
+    /// </summary>
+    public class PopContextMember : PatternContextMember
+    {
+        //The styles associated with the pop.
+        public List<string> PopStyles = new List<string>();
+    }
+
+    /// <summary>
+    /// Represents a single push context member.
+    /// </summary>
+    public class PushContextMember : PatternContextMember
+    {
+        //The context we are pushing to.
+        public string TargetContext;
+
+        //The styles associated with the push.
+        public List<string> PushStyles = new List<string>();
+    }
+
+    /// <summary>
     /// Represents a single inline push context member.
     /// </summary>
     public class InlinePushContextMember : PatternContextMember
