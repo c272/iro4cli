@@ -25,8 +25,6 @@ namespace iro4cli
     /// </summary>
     public class PopContextMember : PatternContextMember
     {
-        //The styles associated with the pop.
-        public List<string> PopStyles = new List<string>();
     }
 
     /// <summary>

@@ -129,13 +129,6 @@ namespace iro4cli
                 var pattern = ((PatternContextMember)member);
                 var styles = GetPatternStyles(pattern.Styles, data);
 
-                //Check if the groups match.
-                if (!Compiler.GroupsMatch(pattern.Data, styles.Count))
-                {
-                    Error.Compile("Amount of capture groups does not line up with the amount of assigned styles.");
-                    return;
-                }
-
                 //Add to text.
                 text.AppendLine("{");
                 //Make sure to replace backslashes and quotes.
@@ -220,13 +213,6 @@ namespace iro4cli
 
                 //Patterns done, pop condition & styles.
                 var popStyles = GetPatternStyles(ilp.PopStyles, data);
-
-                //Patterns match up with context groups?
-                if (!Compiler.GroupsMatch(ilp.PopData, popStyles.Count))
-                {
-                    Error.Compile("Mismatch between capture groups and number of styles for pop with regex '" + ilp.PopData + "'.");
-                    return;
-                }
 
                 //Okay, add pop data.
                 text.AppendLine("'end': '" + ilp.PopData.Replace("\\", "\\\\").Replace("'", "\\'") + "'");

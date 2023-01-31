@@ -16,45 +16,6 @@ namespace iro4cli.Compile
         public static Dictionary<string, IroVariable> Variables;
         
         /// <summary>
-        /// Checks whether the amount of groups from a regex string is the same as expected.
-        /// </summary>
-        public static bool GroupsMatch(string data, int expectedGroups)
-        {
-            //Get groups out, ignoring escape chars.
-            int realGroups = 0;
-            bool ignoreNext = false, inCharSet = false;
-            for (int i=0; i<data.Length; i++)
-            {
-                //Get current character.
-                char c = data[i];
-                
-                //Ignore escape chars.
-                if (c == '\\') { ignoreNext = true; continue; }
-                if (ignoreNext) { ignoreNext = false; continue; }
-
-                //Ignore character sets.
-                if (c == '[') { inCharSet = true; }
-                if (c == ']') { inCharSet = false; }
-                if (inCharSet) { continue; }
-
-                //If there's an open bracket, this might be a group.
-                if (c == '(') 
-                { 
-                    //Is this a lookahead/lookbehind?
-                    if (i<data.Length-1 && data[i+1] == '?')
-                    {
-                        //Yes, ignore.
-                        continue;
-                    }
-                    realGroups++; 
-                }
-            }
-
-            //Return equality.
-            return (expectedGroups == realGroups);
-        }
-
-        /// <summary>
         /// Compiles a set of Algo variables given targets.
         /// </summary>
         public static List<CompileResult> Compile(Dictionary<string, IroVariable> vars, params ICompileTarget[] targets)
@@ -827,7 +788,7 @@ namespace iro4cli.Compile
             return new PopContextMember()
             {
                 Data = regex,
-                PopStyles = styles,
+                Styles = styles,
                 Type = ContextMemberType.Pop
             };
         }
