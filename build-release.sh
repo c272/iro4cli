@@ -20,5 +20,6 @@ buildVariant linux-x64
 buildVariant linux-musl-x64
 buildVariant linux-arm64
 buildVariant osx-x64
+buildVariant osx-arm64
 
 echo -e "${GREEN}All builds completed. Exiting...${NC}"
