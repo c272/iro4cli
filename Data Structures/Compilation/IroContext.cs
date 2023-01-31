@@ -62,8 +62,17 @@ namespace iro4cli
     /// </summary>
     public class ContextMember
     {
+        public int ID;
         public ContextMemberType Type;
         public string Data;
+
+        private static int _curID = 0;
+
+        public ContextMember()
+        {
+            ID = _curID;
+            _curID++;
+        }
     }
 
     /// <summary>

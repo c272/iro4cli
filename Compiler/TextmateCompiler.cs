@@ -295,7 +295,7 @@ namespace iro4cli.Compile
                 return;
             }
 
-            //Does a pop condition exist within this style?
+            //Does a pop condition exist within this context?
             var cond = targetCtx.Members.Find(x => x.Type == ContextMemberType.Pop);
             if (cond == null)
             {

@@ -12,7 +12,9 @@ namespace iro4cli
     public class RougeCompiler : ICompileTarget
     {
         //Contexts that are queued to generate.
-        public Dictionary<Tuple<string, string>, InlinePushContextMember> queuedContexts = new Dictionary<Tuple<string, string>, InlinePushContextMember>();
+        public Dictionary<Tuple<string, string>, InlinePushContextMember> queuedIlpContexts = new Dictionary<Tuple<string, string>, InlinePushContextMember>();
+        private List<string> queuedContexts = new List<string>();
+        public List<string> createdContexts = new List<string>();
 
         /// <summary>
         /// Turns Iro precompile data into a compiled Rouge target.
@@ -23,6 +25,7 @@ namespace iro4cli
 
             //Add the coding header and modules.
             text.AppendLine("# -*- coding: utf-8 -*- #");
+            text.AppendLine("# Generated with iro4cli! #");
             text.AppendLine();
             text.AppendLine("module Rouge");
             text.TabIn();
@@ -53,12 +56,29 @@ namespace iro4cli
             }
             AddContext(mainCtx, "root", data, ref text);
 
-            //Add all the queued helpers.
-            while (queuedContexts.Count != 0)
+            while (queuedContexts.Count != 0 || queuedIlpContexts.Count != 0) 
             {
-                var item = queuedContexts.ElementAt(0);
-                AddILPContext(item.Key.Item1, item.Key.Item2, item.Value, data, ref text);
-                queuedContexts.Remove(item.Key);
+                //Add all the queued contexts.
+                while (queuedContexts.Count != 0)
+                {
+                    var ctx = data.Contexts.FirstOrDefault(x => x.Name == queuedContexts.ElementAt(0));
+                    if (ctx == null) 
+                    {
+                        Error.Compile($"No context exists named '{queuedContexts.ElementAt(0)}' as referenced in a push context.");
+                        return null;
+                    }
+                    AddContext(ctx, ctx.Name, data, ref text);
+                    queuedContexts.Remove(ctx.Name);
+                }
+
+                //Add all the queued helpers.
+                while (queuedIlpContexts.Count != 0)
+                {
+                    var item = queuedIlpContexts.ElementAt(0);
+                    AddILPContext(item.Key.Item1, item.Key.Item2, item.Value, data, ref text);
+                    queuedIlpContexts.Remove(item.Key);
+                    createdContexts.Add(item.Key.Item2);
+                }
             }
 
             //Close all the modules.
@@ -149,18 +169,14 @@ namespace iro4cli
                     string ruleIlp = "rule /" + ilp.Data + "/";
 
                     //Get styles for pattern. Do they match up?
-                    var pushStyles = GetPatternStyles(ilp.Styles, data);
-                    string helperName = "helper_" + ShortId.Generate(7);
+                    var ilpStyles = GetPatternStyles(ilp.Styles, data);
+                    string helperName = ctxName + "_" + member.ID;
 
-                    //Is the helper already made?
-                    var madeHelper = queuedContexts.FirstOrDefault(x => x.Key.Item1 == ctxName && x.Value.Data == ilp.Data);
-                    if (madeHelper.Key != null)
-                    {
-                        //Already made a helper, set the name.
-                        helperName = madeHelper.Key.Item2;
-                    }
+                    //Is the helper already queued/created?
+                    var madeHelper = queuedIlpContexts.Keys.Where(x => x.Item2 == helperName).ToList().Count > 0
+                                    || createdContexts.Contains(helperName);
 
-                    if (pushStyles.Count > 1)
+                    if (ilpStyles.Count > 1)
                     {
                         //Grouped.
                         ruleIlp += " do";
@@ -169,7 +185,7 @@ namespace iro4cli
 
                         ruleIlp = "groups ";
 
-                        foreach (var style in pushStyles)
+                        foreach (var style in ilpStyles)
                         {
                             ruleIlp += style.PygmentsScope.Replace(".", "::") + ", ";
                         }
@@ -184,10 +200,10 @@ namespace iro4cli
                         text.TabOut();
                         text.AppendLine("end");
                     }
-                    else if (pushStyles.Count != 0)
+                    else if (ilpStyles.Count != 0)
                     {
                         //Ungrouped.
-                        ruleIlp += ", " + pushStyles[0].PygmentsScope.Replace(".", "::") + ", :" + helperName;
+                        ruleIlp += ", " + ilpStyles[0].PygmentsScope.Replace(".", "::") + ", :" + helperName;
                         text.AppendLine(ruleIlp);
                     }
                     else
@@ -197,9 +213,55 @@ namespace iro4cli
                     }
 
                     //Queue the push scope if not already pushed.
-                    if (madeHelper.Key == null)
+                    if (!madeHelper)
                     {
                         QueueILPScope(ctxName, helperName, ilp);
+                    }
+                    break;
+
+                case ContextMemberType.Push:
+                     //Inline push pattern.
+                    var push = (PushContextMember)member;
+                    string rulePush = "rule /" + push.Data + "/";
+
+                    //Get styles for pattern. Do they match up?
+                    var pushStyles = GetPatternStyles(push.Styles, data);
+                    if (pushStyles.Count > 1)
+                    {
+                        //Grouped.
+                        rulePush += " do";
+                        text.AppendLine(rulePush);
+                        text.TabIn();
+
+                        ruleIlp = "groups ";
+
+                        foreach (var style in pushStyles)
+                        {
+                            ruleIlp += style.PygmentsScope.Replace(".", "::") + ", ";
+                        }
+
+                        ruleIlp = ruleIlp.TrimEnd(' ', ',');
+                        text.AppendLine(ruleIlp);
+
+                        //Add the push, queue the context for creation.
+                        ruleIlp = "push :" + push.TargetContext;
+                        QueuePushScope(push.TargetContext);
+
+                        //Tab out, end.
+                        text.TabOut();
+                        text.AppendLine("end");
+                    }
+                    else if (pushStyles.Count != 0)
+                    {
+                        //Ungrouped.
+                        rulePush += ", " + pushStyles[0].PygmentsScope.Replace(".", "::") + ", :" + push.TargetContext;
+                        QueuePushScope(push.TargetContext);
+                        text.AppendLine(rulePush);
+                    }
+                    else
+                    {
+                        Error.Compile("No styles given for rule '" + push.Data + "'.");
+                        return;
                     }
                     break;
 
@@ -229,7 +291,15 @@ namespace iro4cli
         //Queues an inline push scope to be generated.
         private void QueueILPScope(string ctx, string helperName, InlinePushContextMember ilp)
         {
-            queuedContexts.Add(new Tuple<string, string>(ctx, helperName), ilp);
+            queuedIlpContexts.Add(new Tuple<string, string>(ctx, helperName), ilp);
+        }
+
+        //Queues a single existing context to be generated.
+        private void QueuePushScope(string ctx)
+        {
+            if (queuedContexts.Contains(ctx))
+                return;
+            queuedContexts.Add(ctx);
         }
 
         //Adds an inline push context member.
@@ -312,7 +382,7 @@ namespace iro4cli
                 styles.Add(data.Styles[index]);
             }
 
-            //Make sure all the patterns have textmate scopes.
+            //Make sure all the patterns have pygments scopes.
             if (styles.Where(x => x.PygmentsScope != null).Count() != styles.Count)
             {
                 Error.Compile("One or more styles for a pattern does not have a Pygments scope defined.");

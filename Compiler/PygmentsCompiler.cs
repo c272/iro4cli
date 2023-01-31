@@ -141,10 +141,10 @@ namespace iro4cli
                     regTxt += "(u'" + ilp.Data.Replace("\\", "\\\\") + "', bygroups(";
 
                     //Get push styles out.
-                    var pushStyles = GetPatternStyles(ilp.Styles, data);
+                    var ilpStyles = GetPatternStyles(ilp.Styles, data);
 
                     //Add and close bygroups scope.
-                    foreach (var style in pushStyles)
+                    foreach (var style in ilpStyles)
                     {
                         regTxt += style.PygmentsScope + ", ";
                     }
@@ -156,6 +156,27 @@ namespace iro4cli
                     QueueContext(ctxName, helperName, ilp);
                     regTxt += ", '" + helperName + "'),";
 
+                    text.AppendLine(regTxt);
+                    return;
+
+                //Push.
+                case ContextMemberType.Push:
+                    var push = (PushContextMember)member;
+                    regTxt += "(u'" + push.Data.Replace("\\", "\\\\") + "', bygroups(";
+
+                    //Get push styles out.
+                    var pushStyles = GetPatternStyles(push.Styles, data);
+
+                    //Add and close bygroups scope.
+                    foreach (var style in pushStyles)
+                    {
+                        regTxt += style.PygmentsScope + ", ";
+                    }
+                    regTxt = regTxt.TrimEnd(',', ' ');
+                    regTxt += ")";
+
+                    //Add the push target scope.
+                    regTxt += ", '" + push.TargetContext + "'),";
                     text.AppendLine(regTxt);
                     return;
 
