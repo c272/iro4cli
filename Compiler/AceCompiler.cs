@@ -26,7 +26,8 @@ namespace iro4cli
             //Add the header.
             text.AppendLine("/*");
             text.AppendLine("* To try in Ace editor, copy and paste into the mode creator");
-            text.AppendLine("*here : http://ace.c9.io/tool/mode_creator.html");
+            text.AppendLine("* here: http://ace.c9.io/tool/mode_creator.html");
+            text.AppendLine("* Generated using iro4cli!");
             text.AppendLine("*/");
             text.AppendLine();
             text.AppendLine("define(function(require, exports, module) {");
@@ -119,7 +120,7 @@ namespace iro4cli
                 text.AppendLine("{");
                 text.AppendLine("\"token\": \"" + patternStyles[0].AceScope + "\",");
                 //Replace normal '\' with '\\', since it's inside another string.
-                text.AppendLine("\"regex\": \"" + pattern.Data.Replace("\\", "\\\\") + "\"");
+                text.AppendLine("\"regex\": \"" + pattern.Data.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"");
 
                 //Close pattern.
                 text.AppendLine("},");
@@ -158,6 +159,24 @@ namespace iro4cli
                 //Close pattern.
                 text.AppendLine("},");
 
+            }
+            else if (member.Type == ContextMemberType.Push)
+            {
+                //Inline push pattern.
+                var push = ((PushContextMember)member);
+                var ilpStyles = GetPatternStyles(push.Styles, data);
+
+                //Get the push data.
+                text.AppendLine("{");
+                text.AppendLine("\"token\": \"" + ilpStyles[0].AceScope + "\",");
+                //Replace normal '\' with '\\', since it's inside another string.
+                text.AppendLine("\"regex\": \"" + push.Data.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\",");
+
+                //Add push for target context.
+                text.AppendLine("\"push\": \"" + push.TargetContext + "\"");
+
+                //Close pattern.
+                text.AppendLine("},");
             }
             else if (member.Type == ContextMemberType.Include)
             {

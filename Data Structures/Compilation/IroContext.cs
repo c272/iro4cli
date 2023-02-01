@@ -21,6 +21,25 @@ namespace iro4cli
     }
 
     /// <summary>
+    /// Represents a single push context member.
+    /// </summary>
+    public class PopContextMember : PatternContextMember
+    {
+    }
+
+    /// <summary>
+    /// Represents a single push context member.
+    /// </summary>
+    public class PushContextMember : PatternContextMember
+    {
+        //The context we are pushing to.
+        public string TargetContext;
+
+        //The styles associated with the push.
+        public List<string> PushStyles = new List<string>();
+    }
+
+    /// <summary>
     /// Represents a single inline push context member.
     /// </summary>
     public class InlinePushContextMember : PatternContextMember
@@ -43,8 +62,17 @@ namespace iro4cli
     /// </summary>
     public class ContextMember
     {
+        public int ID;
         public ContextMemberType Type;
         public string Data;
+
+        private static int _curID = 0;
+
+        public ContextMember()
+        {
+            ID = _curID;
+            _curID++;
+        }
     }
 
     /// <summary>

@@ -129,13 +129,6 @@ namespace iro4cli
                 var pattern = ((PatternContextMember)member);
                 var styles = GetPatternStyles(pattern.Styles, data);
 
-                //Check if the groups match.
-                if (!Compiler.GroupsMatch(pattern.Data, styles.Count))
-                {
-                    Error.Compile("Amount of capture groups does not line up with the amount of assigned styles.");
-                    return;
-                }
-
                 //Add to text.
                 text.AppendLine("{");
                 //Make sure to replace backslashes and quotes.
@@ -221,13 +214,6 @@ namespace iro4cli
                 //Patterns done, pop condition & styles.
                 var popStyles = GetPatternStyles(ilp.PopStyles, data);
 
-                //Patterns match up with context groups?
-                if (!Compiler.GroupsMatch(ilp.PopData, popStyles.Count))
-                {
-                    Error.Compile("Mismatch between capture groups and number of styles for pop with regex '" + ilp.PopData + "'.");
-                    return;
-                }
-
                 //Okay, add pop data.
                 text.AppendLine("'end': '" + ilp.PopData.Replace("\\", "\\\\").Replace("'", "\\'") + "'");
                 text.AppendLine("'endCaptures': {");
@@ -240,6 +226,56 @@ namespace iro4cli
                 text.AppendLine("}");
 
                 //Close whole ILP.
+                text.AppendLine("}");
+            }
+            else if (member.Type == ContextMemberType.Push)
+            {
+                //Push pattern.
+                var push = ((PushContextMember)member);
+                var styles = GetPatternStyles(push.Styles, data);
+                
+                //Add push styles.
+                text.AppendLine("{");
+                text.AppendLine("'begin': '" + push.Data.Replace("\\", "\\\\").Replace("'", "\\'") + "'");
+                text.AppendLine("'beginCaptures': {");
+                for (int i=0; i<styles.Count; i++)
+                {
+                    text.AppendLine("'" + (i + 1) + "': {");
+                    text.AppendLine("'name': '" + styles[i].TextmateScope + "." + data.Name + "'");
+                    text.AppendLine("}");
+                }
+                text.AppendLine("}");
+
+                //Get the context for the pop.
+                var targetCtx = data.Contexts.Find(x => x.Name == push.TargetContext);
+                if (targetCtx == null)
+                {
+                    Error.Compile($"Could not find target context '{push.TargetContext}' for push. Does it exist?");
+                    return;
+                }
+
+                //Does a pop condition exist within this context?
+                var cond = targetCtx.Members.Find(x => x.Type == ContextMemberType.Pop);
+                if (cond == null)
+                {
+                    Error.Compile($"No pop condition provided in pushed context '{push.TargetContext}'.");
+                    return;
+                }
+                var popCondition = (PopContextMember)cond;
+
+                //Patterns done, pop condition & styles.
+                var popStyles = GetPatternStyles(popCondition.Styles, data);
+                text.AppendLine("'end': '" + popCondition.Data.Replace("\\", "\\\\").Replace("'", "\\'") + "'");
+                text.AppendLine("'endCaptures': {");
+                for (int i = 0; i < popStyles.Count; i++)
+                {
+                    text.AppendLine("'" + (i + 1) + "': {");
+                    text.AppendLine("'name': '" + popStyles[i].TextmateScope + "." + data.Name + "'");
+                    text.AppendLine("}");
+                }
+                text.AppendLine("}");
+
+                //Close whole push.
                 text.AppendLine("}");
             }
             else if (member.Type == ContextMemberType.Include)

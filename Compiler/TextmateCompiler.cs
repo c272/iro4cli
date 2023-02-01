@@ -151,9 +151,10 @@ namespace iro4cli.Compile
                     AddInlinePush(ref text, (InlinePushContextMember)pattern, data);
                     break;
                 case ContextMemberType.Push:
-                    throw new NotImplementedException();
+                    AddPush(ref text, (PushContextMember)pattern, data);
+                    break;
                 case ContextMemberType.Pop:
-                    throw new NotImplementedException();
+                    return; //We don't directly add pops, they're processed by the "Push" rules.
                 default:
                     Error.CompileWarning("Failed to add pattern, unrecognized context member type '" + pattern.Type.ToString() + "'.");
                     return;
@@ -169,16 +170,9 @@ namespace iro4cli.Compile
             var styles = GetPatternStyles(pattern.Styles, data);
             text.AppendLine("<dict>");
 
-            //Patterns match up with context groups?
-            if (!Compiler.GroupsMatch(pattern.Data, styles.Count))
-            {
-                Error.Compile("Mismatch between capture groups and number of styles for inline push with regex '" + pattern.Data + "'.");
-                return;
-            }
-
             //Begin capture regex.
             text.AppendLine("<key>begin</key>");
-            text.AppendLine("<string>" + pattern.Data + "</string>");
+            text.AppendLine("<string>" + EscapeXMLElements(pattern.Data) + "</string>");
 
             //Begin capture styles.
             text.AppendLine("<key>beginCaptures</key>");
@@ -239,16 +233,9 @@ namespace iro4cli.Compile
             //Patterns done, pop condition & styles.
             var popStyles = GetPatternStyles(pattern.PopStyles, data);
 
-            //Patterns match up with context groups?
-            if (!Compiler.GroupsMatch(pattern.Data, styles.Count))
-            {
-                Error.Compile("Mismatch between capture groups and number of styles for pop with regex '" + pattern.PopData + "'.");
-                return;
-            }
-
             //Okay, add pop data.
             text.AppendLine("<key>end</key>");
-            text.AppendLine("<string>" + pattern.PopData + "</string>");
+            text.AppendLine("<string>" + EscapeXMLElements(pattern.PopData) + "</string>");
             text.AppendLine("<key>endCaptures</key>");
             text.AppendLine("<dict>");
             for (int i = 0; i < popStyles.Count; i++)
@@ -262,6 +249,82 @@ namespace iro4cli.Compile
             text.AppendLine("</dict>");
 
             //Close the inline push.
+            text.AppendLine("</dict>");
+        }
+
+        /// <summary>
+        /// Adds a regular push to the Textmate output.
+        /// </summary>
+        private void AddPush(ref StringBuilder text, PushContextMember pattern, IroPrecompileData data)
+        {
+            //Get styles from the pattern.
+            var styles = GetPatternStyles(pattern.Styles, data);
+            text.AppendLine("<dict>");
+
+            //Begin capture regex.
+            text.AppendLine("<key>begin</key>");
+            text.AppendLine("<string>" + EscapeXMLElements(pattern.Data) + "</string>");
+
+            //Begin capture styles.
+            text.AppendLine("<key>beginCaptures</key>");
+            text.AppendLine("<dict>");
+            for (int i=0; i<styles.Count; i++)
+            {
+                text.AppendLine("<key>" + (i + 1) + "</key>");
+                text.AppendLine("<dict>");
+                text.AppendLine("<key>name</key>");
+                text.AppendLine("<string>" + styles[i].TextmateScope + "." + data.Name + "</string>");
+                text.AppendLine("</dict>");
+            }
+            text.AppendLine("</dict>");
+
+            //Include the target context as the context patterns.
+            text.AppendLine("<key>patterns</key>");
+            text.AppendLine("<array>");
+            text.AppendLine("<dict>");
+            text.AppendLine("<key>include</key>");
+            text.AppendLine($"<string>{pattern.TargetContext}</string>");
+            text.AppendLine("</dict>");
+            text.AppendLine("</array>");
+
+            //Patterns done, attempt to fetch pop condition & styles.
+            var targetCtx = data.Contexts.Find(x => x.Name == pattern.TargetContext);
+            if (targetCtx == null)
+            {
+                Error.Compile($"Could not find target context '{pattern.TargetContext}' for push. Does it exist?");
+                return;
+            }
+
+            //Does a pop condition exist within this context?
+            var cond = targetCtx.Members.Find(x => x.Type == ContextMemberType.Pop);
+            if (cond == null)
+            {
+                Error.Compile($"No pop condition provided in pushed context '{pattern.TargetContext}'.");
+                return;
+            }
+            var popCondition = (PopContextMember)cond;
+
+            //Add the pop rule.
+            text.AppendLine("<key>end</key>");
+            text.AppendLine($"<string>{EscapeXMLElements(popCondition.Data)}</string>");
+
+            //Get pop styles to add them.
+            var popStyles = GetPatternStyles(popCondition.Styles, data);
+
+            //Add pop styles.
+            text.AppendLine("<key>endCaptures</key>");
+            text.AppendLine("<dict>");
+            for (int i = 0; i < popStyles.Count; i++)
+            {
+                text.AppendLine("<key>" + (i + 1) + "</key>");
+                text.AppendLine("<dict>");
+                text.AppendLine("<key>name</key>");
+                text.AppendLine("<string>" + popStyles[i].TextmateScope + "." + data.Name + "</string>");
+                text.AppendLine("</dict>");
+            }
+            text.AppendLine("</dict>");
+
+            //Close the push.
             text.AppendLine("</dict>");
         }
 
@@ -281,18 +344,10 @@ namespace iro4cli.Compile
             //Get styles from the pattern.
             var styles = GetPatternStyles(pattern.Styles, data);
 
-            //Is the amount of patterns equal to the amount of context groups?
-            //Use a hack of replacing bracket groups with normal letters.
-            if (!Compiler.GroupsMatch(pattern.Data, styles.Count))
-            {
-                Error.Compile("Mismatch between capture groups and number of styles for pattern with regex '" + pattern.Data + "'.");
-                return;
-            }
-
             //Add the initial match.
             text.AppendLine("<dict>");
             text.AppendLine("<key>match</key>");
-            text.AppendLine("<string>" + pattern.Data + "</string>");
+            text.AppendLine("<string>" + EscapeXMLElements(pattern.Data) + "</string>");
 
             //Only one style? Just use the 'name' property.
             if (pattern.Styles.Count == 1) 
@@ -368,24 +423,27 @@ namespace iro4cli.Compile
                 string indentedXml = doc.ToString();
                 var xmlBuilder = new StringBuilder(indentedXml);
 
+                //Fix greater than tokens within Regex.
+                indentedXml = UnescapeXMLElements(indentedXml);
+
                 //Try to format the Regex strings.
-                var matches = Regex.Matches(indentedXml, "<string>[^\r\n]*</string>");
-                int currentDifferential = 0;
-                foreach (Match match in matches)
-                {
-                    //Get the string out, XML format it.
-                    string regex = Regex.Replace(match.Value, "<string>|</string>", "");
-                    regex = SecurityElement.Escape(regex);
-                    regex = "<string>" + regex + "</string>";
+                // var matches = Regex.Matches(indentedXml, "<string>[^\r\n]*</string>");
+                // int currentDifferential = 0;
+                // foreach (Match match in matches)
+                // {
+                //     //Get the string out, XML format it.
+                //     string regex = Regex.Replace(match.Value, "<string>|</string>", "");
+                //     regex = SecurityElement.Escape(regex);
+                //     regex = "<string>" + regex + "</string>";
 
-                    //Insert new.
-                    xmlBuilder.Remove(match.Index + currentDifferential, match.Length);
-                    xmlBuilder.Insert(match.Index + currentDifferential, regex);
+                //     //Insert new.
+                //     xmlBuilder.Remove(match.Index + currentDifferential, match.Length);
+                //     xmlBuilder.Insert(match.Index + currentDifferential, regex);
 
-                    //Update the differential.
-                    //Previous inserts may have changed the index, so this variable compensates.
-                    currentDifferential += regex.Length - match.Length;
-                }
+                //     //Update the differential.
+                //     //Previous inserts may have changed the index, so this variable compensates.
+                //     currentDifferential += regex.Length - match.Length;
+                // }
 
                 //Return the XML.
                 return xmlBuilder.ToString();
@@ -396,6 +454,18 @@ namespace iro4cli.Compile
                 Error.Compile("Failed to generate valid Textmate file: '" + e.Message + "'.");
                 return null;
             }
+        }
+
+        //Escapes any invalid XML elements.
+        private static string EscapeXMLElements(string original)
+        {
+            return original.Replace( "&","&amp;").Replace("'","&apos;").Replace( "\"", "&quot;").Replace(">","&gt;").Replace( "<","&lt;");
+        }
+
+        //Unescapes all XML escaped elements.
+        private static string UnescapeXMLElements(string escaped)
+        {
+            return escaped.Replace("&apos;", "'").Replace("&quot;", "\"").Replace("&gt;", ">").Replace("&lt;", "<").Replace("&amp;", "&");
         }
 
         /// <summary>

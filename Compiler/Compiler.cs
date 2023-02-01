@@ -16,45 +16,6 @@ namespace iro4cli.Compile
         public static Dictionary<string, IroVariable> Variables;
         
         /// <summary>
-        /// Checks whether the amount of groups from a regex string is the same as expected.
-        /// </summary>
-        public static bool GroupsMatch(string data, int expectedGroups)
-        {
-            //Get groups out, ignoring escape chars.
-            int realGroups = 0;
-            bool ignoreNext = false, inCharSet = false;
-            for (int i=0; i<data.Length; i++)
-            {
-                //Get current character.
-                char c = data[i];
-                
-                //Ignore escape chars.
-                if (c == '\\') { ignoreNext = true; continue; }
-                if (ignoreNext) { ignoreNext = false; continue; }
-
-                //Ignore character sets.
-                if (c == '[') { inCharSet = true; }
-                if (c == ']') { inCharSet = false; }
-                if (inCharSet) { continue; }
-
-                //If there's an open bracket, this might be a group.
-                if (c == '(') 
-                { 
-                    //Is this a lookahead/lookbehind?
-                    if (i<data.Length-1 && data[i+1] == '?')
-                    {
-                        //Yes, ignore.
-                        continue;
-                    }
-                    realGroups++; 
-                }
-            }
-
-            //Return equality.
-            return (expectedGroups == realGroups);
-        }
-
-        /// <summary>
         /// Compiles a set of Algo variables given targets.
         /// </summary>
         public static List<CompileResult> Compile(Dictionary<string, IroVariable> vars, params ICompileTarget[] targets)
@@ -322,10 +283,14 @@ namespace iro4cli.Compile
                             iroCtx.Members.Add(ParsePattern((IroSet)value));
                             break;
                         case "pop":
-                            //Pop rules are never directly parsed, only used as a result of inline_push or push.
+                            iroCtx.Members.Add(ParsePop((IroSet)value));
                             break;
                         case "push":
-                            //todo: add push rules
+                            iroCtx.Members.Add(ParsePush((IroSet)value, contexts));
+                            break;
+                            
+                        //We have no idea what this is.
+                        default:
                             throw new NotImplementedException();
                     }
                 }
@@ -517,6 +482,10 @@ namespace iro4cli.Compile
                     Error.Compile("Inline push attribute 'regex' must be a regex value.");
                     return null;
                 }
+            } else 
+            {
+                //Just a normal regex, get out the string value.
+                regex = ((IroRegex)ilp["regex"]).StringValue;
             }
             if (!(ilp["styles"] is IroList))
             {
@@ -534,8 +503,7 @@ namespace iro4cli.Compile
                 return null;
             }
 
-            //Get out the regex and style values.
-            regex = ((IroRegex)ilp["regex"]).StringValue;
+            //Get out the style values.
             List<string> styles = new List<string>();
             foreach (var style in ((IroList)ilp["styles"]))
             {
@@ -657,6 +625,171 @@ namespace iro4cli.Compile
                 PopStyles = popStyles,
                 Patterns = ctxMems,
                 Type = ContextMemberType.InlinePush
+            };
+        }
+
+        /// <summary>
+        /// Parses a single push context member in Iro.
+        /// </summary>
+        private static ContextMember ParsePush(IroSet push, IroSet contexts)
+        {
+            //Ensure the push has required fields 'regex', 'styles' and 'context'.
+            if (!push.ContainsKey("regex") || !push.ContainsKey("styles")
+                || !push.ContainsKey("context"))
+            {
+                Error.Compile("Required attribute is missing from push (must have members 'regex', 'styles', 'context').");
+                return null;
+            }
+
+            //Ensure types of required fields are correct.
+            string regex = null;
+            if (!(push["regex"] is IroRegex))
+            {
+                //Is it a constant yet to be converted?
+                if ((push["regex"] is IroReference))
+                {
+                    //Attempt to get the constant.
+                    IroVariable constant = GetConstant(((IroReference)push["regex"]).Value, VariableType.Regex);
+                    if (constant is IroRegex)
+                    {
+                        regex = ((IroRegex)constant).StringValue;
+                    }
+                    else
+                    {
+                        regex = ((IroValue)constant).Value;
+                    }
+                }
+                else
+                {
+                    Error.Compile("Push attribute 'regex' must be a regex value.");
+                    return null;
+                }
+            }
+            else
+            {
+                //Just a normal regex, get out the string value.
+                regex = ((IroRegex)push["regex"]).StringValue;
+            }
+            if (!(push["styles"] is IroList))
+            {
+                Error.Compile("Push attribute 'styles' must be an array value.");
+                return null;
+            }
+            if (!(push["context"] is IroList) || ((IroList)push["context"]).Count() != 1)
+            {
+                Error.Compile("Push attribute 'context' must be an array value of length 1.");
+                return null;
+            }
+
+            //Parse out the styles.
+            List<string> styles = new List<string>();
+            foreach (var style in ((IroList)push["styles"]))
+            {
+                //Is the value a name?
+                if (!(style is IroValue))
+                {
+                    Error.CompileWarning("Failed to add pattern style for pattern with regex '" + regex + "', array member is not a value.");
+                    continue;
+                }
+
+                //Get the name out and add it.
+                styles.Add(((IroValue)style).Value);
+            }
+
+            //Ensure that the target context value is of a valid type.
+            IroVariable context_var = ((IroList)push["context"]).ElementAt(0);
+            if (context_var.Type != VariableType.Value)
+            {
+                Error.Compile("Context items within 'push' must be a value type.");
+                return null;
+            }
+
+            //Ensure that the target context exists within our context list.
+            var context_name = ((IroValue)context_var).Value;
+            if (!contexts.ContainsKey(context_name))
+            {
+                Error.Compile($"Referenced context in push '{context_name}' not found in contexts list.");
+                return null;
+            }
+
+            //Everything seems valid, create our push context!
+            return new PushContextMember()
+            {
+                Data = regex,
+                TargetContext = context_name,
+                Styles = styles,
+                Type = ContextMemberType.Push,
+            };
+        }
+
+        /// <summary>
+        /// Parses a single pop context member in Iro.
+        /// </summary>
+        private static ContextMember ParsePop(IroSet pop)
+        {
+            //Ensure the pop has required fields 'regex', 'styles'.
+            if (!pop.ContainsKey("regex") || !pop.ContainsKey("styles"))
+            {
+                Error.Compile("Required attribute is missing from pop (must have members 'regex', 'styles').");
+                return null;
+            }
+
+            //Ensure types of required fields are correct.
+            string regex = null;
+            if (!(pop["regex"] is IroRegex))
+            {
+                //Is it a constant yet to be converted?
+                if ((pop["regex"] is IroReference))
+                {
+                    //Attempt to get the constant.
+                    IroVariable constant = GetConstant(((IroReference)pop["regex"]).Value, VariableType.Regex);
+                    if (constant is IroRegex)
+                    {
+                        regex = ((IroRegex)constant).StringValue;
+                    }
+                    else
+                    {
+                        regex = ((IroValue)constant).Value;
+                    }
+                }
+                else
+                {
+                    Error.Compile("Push attribute 'regex' must be a regex value.");
+                    return null;
+                }
+            }
+            else 
+            {
+                //Just a normal regex, get out the string value.
+                regex = ((IroRegex)pop["regex"]).StringValue;
+            }
+            if (!(pop["styles"] is IroList))
+            {
+                Error.Compile("Push attribute 'styles' must be an array value.");
+                return null;
+            }
+
+            //Parse out the styles.
+            List<string> styles = new List<string>();
+            foreach (var style in ((IroList)pop["styles"]))
+            {
+                //Is the value a name?
+                if (!(style is IroValue))
+                {
+                    Error.CompileWarning("Failed to add pattern style for pattern with regex '" + regex + "', array member is not a value.");
+                    continue;
+                }
+
+                //Get the name out and add it.
+                styles.Add(((IroValue)style).Value);
+            }
+
+            //Create the pop.
+            return new PopContextMember()
+            {
+                Data = regex,
+                Styles = styles,
+                Type = ContextMemberType.Pop
             };
         }
 
