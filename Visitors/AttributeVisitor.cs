@@ -91,15 +91,28 @@ namespace iro4cli
             //Normal equality type?
             else if (context.EQUALS_SYM() != null)
             {
-                //Must be a normal identifier.
-                if (context.definition_ident() == null)
+                //Yes, if it's a normal definition identifier return it.
+                if (context.definition_ident() != null)
                 {
-                    Error.Fatal(context, "Value provided for standard non-regex variable must be a string.");
+                    return new IroValue(context.definition_ident().IDENTIFIER().GetText());
+                    
+                }
+                else if (context.HEX_VALUE() != null)
+                {
+                    //Not a normal definition identifier. Hex value!
+                    var hex = IroHex.Parse(context.HEX_VALUE().GetText());
+                    if (hex == null) 
+                    {
+                        Error.Fatal(context, "Invalid hexadecimal value provided, must be of the format '#NNN or #NNNNNN'.");
+                        return null;
+                    }
+                    return hex;
+                }
+                else
+                {
+                    Error.Fatal(context, "Value provided for standard non-regex variable must be a string or hexadecimal value.");
                     return null;
                 }
-
-                //Return the value.
-                return new IroValue(context.definition_ident().IDENTIFIER().GetText());
             }
 
             //Unknown.

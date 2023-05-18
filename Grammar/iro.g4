@@ -4,6 +4,10 @@ grammar iro;
 @parser::header {#pragma warning disable 3021}
 @lexer::header {#pragma warning disable 3021}
 
+@lexer::members {
+  private bool rhsmode = false;
+}
+
 /*
  * Parser Rules
  */
@@ -31,6 +35,7 @@ include: COLON_SYM IDENTIFIER QUOTE_SYM IDENTIFIER QUOTE_SYM SEMICOLON_SYM;
 
 //Definition, possible right hand sides of attribute.
 definition: ARRAY_SYM? (EQUALS_SYM | REG_EQUALS_SYM) (definition_ident //Literal (eg. myname)
+			| HEX_VALUE
 			| regex //Regular expression.
 			| constant_ref //Reference to a defined const (eg. $${__MYCONST}).
 			| array
@@ -58,7 +63,7 @@ REGEX: L_BRACKET (~[()\n\r] | '\\(' | '\\)' | REGEX)* R_BRACKET ('|' | '?' | '*'
 //Operators & symbols.
 ESCAPED_BRACKET: '\\(' | '\\)';
 REG_EQUALS_SYM: '\\=';
-EQUALS_SYM: '=';
+EQUALS_SYM: '=' {rhsmode=true;};
 ARRAY_SYM: '[]';
 COMMA_SYM: ',';
 L_SQUARE_BRACKET: '[';
@@ -75,11 +80,16 @@ R_BRACKET: ')';
 //An identifier.
 IDENTIFIER: [A-Za-z0-9_.-]+;
 
+//A hexadecimal colour value.
+HEX_VALUE: {rhsmode}? '#' [0-9A-Za-z]+;
+
 //Comments start with "#" in Iro.
-COMMENT: '#' (.)*? '\n' -> channel(HIDDEN);
+//Only valid when not in RHS mode.
+COMMENT: {!rhsmode}? '#' (.)*? '\n' -> channel(HIDDEN);
 
 //Ignore all newlines and whitespace.
-WS:	[ \n\r\t]+ -> channel(HIDDEN);
+WS:	[ \r\t]+ -> channel(HIDDEN);
+ENDL: '\n' {rhsmode=false;} -> channel(HIDDEN);
 
 //Capture token for unknowns.
 UNKNOWN_SYMBOL: .;

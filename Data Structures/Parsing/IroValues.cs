@@ -20,6 +20,28 @@ namespace iro4cli
             Value = val;
         }
     }
+
+    //Represents a single hexadecimal value in Iro.
+    public class IroHex : IroVariable
+    {
+        public string Value;
+
+        private IroHex(string hexVal)
+        {
+            base.Type = VariableType.Hex;
+            Value = hexVal;
+        }
+
+        //Attempts to parse the given string into an Iro hex value.
+        //On failure, returns null.
+        public static IroHex Parse(string hexVal)
+        {
+            //Ensure the value conforms to the standard.
+            if (!hexVal.StartsWith('#') || (hexVal.Length != 4 && hexVal.Length != 7))
+                return null;
+            return new IroHex(hexVal);
+        }
+    }
     
     public class IroRegex : IroVariable
     {

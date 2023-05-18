@@ -69,13 +69,31 @@ namespace iro4cli.Compile
                 //Switch on all the values in that set and define style based on the keys.
                 foreach (var styleProperty in styleDefinition)
                 {
-                    //Is the value a string?
-                    if (styleProperty.Value.Type != VariableType.Value)
+                    //Is the value for a colour, or another random property?
+                    string value;
+                    if (styleProperty.Key == "color" || styleProperty.Key == "colour"
+                        || styleProperty.Key == "background_color" || styleProperty.Key == "background_colour")
                     {
-                        Error.CompileWarning("Failed to create style with name '" + style.Key + ", non-string value defined in the style object.");
-                        continue;
+                        //For a colour, so it must be hex or string type.
+                        if (styleProperty.Value.Type != VariableType.Value && styleProperty.Value.Type != VariableType.Hex)
+                        {
+                            Error.CompileWarning("Failed to create style with name '" + style.Key + ", colour values must be of type hex or string.");
+                            continue;
+                        }
+
+                        //It is, grab value out.
+                        value = (styleProperty.Value is IroValue) ? ((IroValue)styleProperty.Value).Value : ((IroHex)styleProperty.Value).Value;
                     }
-                    string value = ((IroValue)styleProperty.Value).Value;
+                    else
+                    {
+                        //Ensure property is a value type, then grab value out.
+                        if (styleProperty.Value.Type != VariableType.Value)
+                        {
+                            Error.CompileWarning("Failed to create style with name '" + style.Key + "', non-string value defined in the style object.");
+                            continue;
+                        }
+                        value = ((IroValue)styleProperty.Value).Value;
+                    }
 
                     //Switch on the property.
                     switch (styleProperty.Key)
