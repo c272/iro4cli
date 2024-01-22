@@ -3,6 +3,8 @@ name: .NET
 on:
   push:
     branches: [ "master" ]
+    tags:
+      - "*"
   pull_request:
     branches: [ "master" ]
 
@@ -12,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 6.0.x
     - name: Install Antlr & other apt packages.
@@ -27,3 +29,37 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+    - name: Build Executables
+      run: |
+        ./build-release.sh
+
+    - name: Upload Executables
+      uses: actions/upload-artifact@v3
+      with:
+        name: bin
+        path: |
+          ./bin/ReleaseZipped
+        retention-days: 1
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Draft the release
+        uses: meeDamian/github-release@2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          gzip: folders
+          draft: true
+          files: >
+            ./bin/win-x64.zip
+            ./bin/linux-x64.zip
+            ./bin/linux-musl-x64.zip
+            ./bin/linux-arm64.zip
+            ./bin/osx-x64.zip
+            ./bin/osx-arm64.zip
